@@ -1212,6 +1212,7 @@ GameObject:
   - component: {fileID: 753601274}
   - component: {fileID: 753601275}
   - component: {fileID: 753601276}
+  - component: {fileID: 753601277}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -1285,6 +1286,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlignmentHUD
   corruptionSystem: {fileID: 1995000003}
+--- !u!114 &753601277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753601272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6ccf1123a514b13b8e9e9fe52ad0efa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneAtmosphereLayer
+  targetCamera: {fileID: 0}
+  groundRenderer: {fileID: 420000003}
+  backgroundColor: {r: 0.06, g: 0.055, b: 0.08, a: 0}
+  groundTint: {r: 0.76, g: 0.72, b: 0.74, a: 1}
+  floorWashColor: {r: 0.1, g: 0.085, b: 0.095, a: 0.5}
+  edgeShadowColor: {r: 0.04, g: 0.03, b: 0.04, a: 0.72}
+  crackColor: {r: 0.13, g: 0.11, b: 0.12, a: 0.78}
+  ashColor: {r: 0.55, g: 0.52, b: 0.5, a: 0.22}
+  stoneColor: {r: 0.33, g: 0.31, b: 0.32, a: 0.9}
+  stoneHighlightColor: {r: 0.48, g: 0.43, b: 0.4, a: 0.2}
+  corruptionColor: {r: 0.14, g: 0.34, b: 0.22, a: 0.42}
+  corruptionCoreColor: {r: 0.29, g: 0.56, b: 0.36, a: 0.22}
+  backgroundSortOrder: -5
+  decorationSortOrder: -1
+  centerSafeRadius: 1.8
 --- !u!1 &762168580
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,15 +9,13 @@ public class FloorFlowManager : MonoBehaviour
     public class WaveStage
     {
         public string displayName = "Ashen Approach";
-        [Range(0f, 1f)]
-        public float startTimeNormalized;
+        [Range(0f, 1f)] public float startTimeNormalized;
         public float spawnInterval = 2f;
         public int batchCount = 1;
         public float healthMultiplier = 1f;
         public float speedMultiplier = 1f;
         public float scaleMultiplier = 1f;
-        [Range(0f, 1f)]
-        public float eliteChance;
+        [Range(0f, 1f)] public float eliteChance;
         public Color enemyTint = Color.white;
         public Color eliteTint = new Color(0.78f, 0.26f, 0.3f, 1f);
         public string corruptionMessage = "";
@@ -341,51 +339,66 @@ public class FloorFlowManager : MonoBehaviour
 
         canvasObject.AddComponent<GraphicRaycaster>();
 
-        GameObject labelObject = new GameObject("FloorTimerLabel");
-        labelObject.transform.SetParent(canvasObject.transform, false);
-        timerLabel = labelObject.AddComponent<Text>();
-        timerLabel.font = uiFont;
-        timerLabel.fontSize = 20;
-        timerLabel.alignment = TextAnchor.UpperCenter;
-        timerLabel.color = new Color(0.94f, 0.94f, 0.98f, 1f);
+        GameObject plate = CreateImageObject("TopPlate", canvasObject.transform, new Color(0.06f, 0.055f, 0.07f, 0.9f), true);
+        RectTransform plateRect = plate.GetComponent<RectTransform>();
+        plateRect.anchorMin = new Vector2(0.5f, 1f);
+        plateRect.anchorMax = new Vector2(0.5f, 1f);
+        plateRect.pivot = new Vector2(0.5f, 1f);
+        plateRect.anchoredPosition = new Vector2(0f, -14f);
+        plateRect.sizeDelta = new Vector2(270f, 78f);
 
-        RectTransform rect = labelObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = new Vector2(0f, -22f);
-        rect.sizeDelta = new Vector2(420f, 36f);
+        CreateFrameLine(plate.transform, "PlateTop", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -2f), new Vector2(0f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.85f));
+        CreateFrameLine(plate.transform, "PlateBottom", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 2f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
 
-        GameObject waveObject = new GameObject("WaveLabel");
-        waveObject.transform.SetParent(canvasObject.transform, false);
-        waveLabel = waveObject.AddComponent<Text>();
-        waveLabel.font = uiFont;
-        waveLabel.fontSize = 18;
-        waveLabel.alignment = TextAnchor.UpperCenter;
-        waveLabel.color = new Color(0.82f, 0.88f, 0.96f, 0.96f);
+        timerLabel = CreateText(
+            "FloorTimerLabel",
+            plate.transform,
+            "02:30",
+            30,
+            new Color(0.95f, 0.92f, 0.84f, 1f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, -10f),
+            new Vector2(240f, 34f),
+            FontStyle.Bold,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f));
 
-        RectTransform waveRect = waveObject.GetComponent<RectTransform>();
-        waveRect.anchorMin = new Vector2(0.5f, 1f);
-        waveRect.anchorMax = new Vector2(0.5f, 1f);
-        waveRect.pivot = new Vector2(0.5f, 1f);
-        waveRect.anchoredPosition = new Vector2(0f, -54f);
-        waveRect.sizeDelta = new Vector2(460f, 30f);
+        waveLabel = CreateText(
+            "WaveLabel",
+            plate.transform,
+            "Stage: Ashen Approach",
+            13,
+            new Color(0.77f, 0.74f, 0.7f, 1f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, -42f),
+            new Vector2(240f, 20f),
+            FontStyle.Normal,
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 1f));
 
-        GameObject eventObject = new GameObject("CorruptionEventLabel");
-        eventObject.transform.SetParent(canvasObject.transform, false);
-        eventLabel = eventObject.AddComponent<Text>();
-        eventLabel.font = uiFont;
-        eventLabel.fontSize = 22;
-        eventLabel.alignment = TextAnchor.UpperCenter;
-        eventLabel.color = new Color(0.95f, 0.86f, 0.88f, 0f);
-        eventLabel.text = string.Empty;
+        GameObject eventPlate = CreateImageObject("EventPlate", canvasObject.transform, new Color(0.09f, 0.06f, 0.07f, 0.78f), true);
+        RectTransform eventPlateRect = eventPlate.GetComponent<RectTransform>();
+        eventPlateRect.anchorMin = new Vector2(0.5f, 1f);
+        eventPlateRect.anchorMax = new Vector2(0.5f, 1f);
+        eventPlateRect.pivot = new Vector2(0.5f, 1f);
+        eventPlateRect.anchoredPosition = new Vector2(0f, -96f);
+        eventPlateRect.sizeDelta = new Vector2(520f, 34f);
 
-        RectTransform eventRect = eventObject.GetComponent<RectTransform>();
-        eventRect.anchorMin = new Vector2(0.5f, 1f);
-        eventRect.anchorMax = new Vector2(0.5f, 1f);
-        eventRect.pivot = new Vector2(0.5f, 1f);
-        eventRect.anchoredPosition = new Vector2(0f, -92f);
-        eventRect.sizeDelta = new Vector2(620f, 36f);
+        eventLabel = CreateText(
+            "CorruptionEventLabel",
+            eventPlate.transform,
+            string.Empty,
+            18,
+            new Color(0.96f, 0.86f, 0.88f, 0f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, 0f),
+            new Vector2(490f, 24f),
+            FontStyle.Bold,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
     }
 
     private void UpdateTimerLabel()
@@ -397,7 +410,7 @@ public class FloorFlowManager : MonoBehaviour
 
         if (exitSpawned)
         {
-            timerLabel.text = "Floor cleared - enter the portal";
+            timerLabel.text = "GATE OPEN";
             if (waveLabel != null)
             {
                 waveLabel.text = "Stage: Extraction";
@@ -406,7 +419,10 @@ public class FloorFlowManager : MonoBehaviour
         }
 
         int displaySeconds = Mathf.CeilToInt(remainingTime);
-        timerLabel.text = "Time left: " + displaySeconds + "s";
+        int minutes = displaySeconds / 60;
+        int seconds = displaySeconds % 60;
+        timerLabel.text = minutes.ToString("00") + ":" + seconds.ToString("00");
+
         if (waveLabel != null && currentWaveIndex >= 0 && currentWaveIndex < waveStages.Count)
         {
             waveLabel.text = "Stage: " + waveStages[currentWaveIndex].displayName;
@@ -497,6 +513,67 @@ public class FloorFlowManager : MonoBehaviour
 
         eventLabel.text = string.Empty;
         eventRoutine = null;
+    }
+
+    private GameObject CreateImageObject(string name, Transform parent, Color color, bool sliced)
+    {
+        GameObject imageObject = new GameObject(name);
+        imageObject.transform.SetParent(parent, false);
+        Image image = imageObject.AddComponent<Image>();
+        image.color = color;
+        image.sprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Background.psd");
+        image.type = sliced ? Image.Type.Sliced : Image.Type.Simple;
+        return imageObject;
+    }
+
+    private void CreateFrameLine(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, Color color)
+    {
+        GameObject line = CreateImageObject(name, parent, color, false);
+        RectTransform rect = line.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.offsetMin = offsetMin;
+        rect.offsetMax = offsetMax;
+    }
+
+    private Text CreateText(
+        string name,
+        Transform parent,
+        string content,
+        int fontSize,
+        Color color,
+        TextAnchor alignment,
+        Vector2 anchoredPosition,
+        Vector2 sizeDelta,
+        FontStyle fontStyle,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 pivot)
+    {
+        GameObject textObject = new GameObject(name);
+        textObject.transform.SetParent(parent, false);
+
+        Text text = textObject.AddComponent<Text>();
+        text.font = uiFont;
+        text.fontSize = fontSize;
+        text.fontStyle = fontStyle;
+        text.text = content;
+        text.color = color;
+        text.alignment = alignment;
+        text.raycastTarget = false;
+
+        Outline outline = textObject.AddComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 0.5f);
+        outline.effectDistance = new Vector2(1f, -1f);
+
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = pivot;
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+
+        return text;
     }
 
     private Sprite GetWhiteSprite()
