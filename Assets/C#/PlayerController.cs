@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
+[RequireComponent(typeof(DarkPulseController))]
 public class PlayerController : MonoBehaviour
 {
     [FormerlySerializedAs("speed")]
@@ -22,10 +23,12 @@ public class PlayerController : MonoBehaviour
     private float attackTimer;
     private float attackPoseTimer;
     private SpriteRenderer spriteRenderer;
+    private DarkPulseController darkPulseController;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        darkPulseController = GetComponent<DarkPulseController>();
 
         if (spriteRenderer != null && holdSprite != null)
         {
@@ -71,6 +74,11 @@ public class PlayerController : MonoBehaviour
         if (bullet != null)
         {
             bullet.SetTarget(nearestEnemy);
+        }
+
+        if (darkPulseController != null)
+        {
+            darkPulseController.TryTriggerDarkPulse();
         }
 
         TriggerAttackPose();

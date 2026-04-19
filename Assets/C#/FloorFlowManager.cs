@@ -45,7 +45,7 @@ public class FloorFlowManager : MonoBehaviour
     [SerializeField] private Color topHudStageDividerColor = new Color(0.56f, 0.49f, 0.43f, 0.34f);
     [SerializeField] private int topHudTimerFontSize = 42;
     [SerializeField] private int topHudStageFontSize = 14;
-    public float floorDuration = 150f;
+    public float floorDuration = 30f;
     public float exitDistance = 3.5f;
     public Vector3 playerSpawnPosition = Vector3.zero;
     public List<WaveStage> waveStages = new List<WaveStage>();
@@ -330,7 +330,7 @@ public class FloorFlowManager : MonoBehaviour
         }
 
         ShowFloorClearTitle();
-        ShowEventMessage("The gate to the next floor has opened.");
+        ShowEventMessage("The gate opens. Descend when you are ready.");
 
         Vector3 portalPosition = playerSpawnPosition + Vector3.up * exitDistance;
         if (playerTransform != null)
@@ -342,33 +342,12 @@ public class FloorFlowManager : MonoBehaviour
         portalRoot.transform.position = portalPosition;
         portalRoot.transform.localScale = new Vector3(1.4f, 2.2f, 1f);
 
-        SpriteRenderer frameRenderer = portalRoot.AddComponent<SpriteRenderer>();
-        frameRenderer.sprite = GetWhiteSprite();
-        frameRenderer.color = new Color(0.15f, 0.08f, 0.05f, 0.95f);
-        frameRenderer.sortingOrder = 4;
-
-        GameObject glow = new GameObject("Glow");
-        glow.transform.SetParent(portalRoot.transform, false);
-        glow.transform.localScale = new Vector3(0.65f, 0.78f, 1f);
-        SpriteRenderer glowRenderer = glow.AddComponent<SpriteRenderer>();
-        glowRenderer.sprite = GetWhiteSprite();
-        glowRenderer.color = new Color(0.22f, 0.85f, 0.92f, 0.92f);
-        glowRenderer.sortingOrder = 5;
-
-        GameObject textObject = new GameObject("PortalLabel");
-        textObject.transform.SetParent(portalRoot.transform, false);
-        textObject.transform.localPosition = new Vector3(0f, -0.95f, 0f);
-        TextMesh textMesh = textObject.AddComponent<TextMesh>();
-        textMesh.text = "NEXT";
-        textMesh.fontSize = 28;
-        textMesh.characterSize = 0.08f;
-        textMesh.anchor = TextAnchor.MiddleCenter;
-        textMesh.alignment = TextAlignment.Center;
-        textMesh.color = new Color(0.94f, 0.95f, 1f, 1f);
-
         BoxCollider2D trigger = portalRoot.AddComponent<BoxCollider2D>();
         trigger.isTrigger = true;
         trigger.size = new Vector2(0.95f, 1.1f);
+
+        FloorExitPortalVisual portalVisual = portalRoot.AddComponent<FloorExitPortalVisual>();
+        portalVisual.Build();
 
         activePortal = portalRoot.AddComponent<FloorExitPortal>();
         activePortal.Initialize(this);
@@ -795,8 +774,8 @@ public class FloorFlowManager : MonoBehaviour
     {
         ShowTitleCard(
             "FLOOR CLEARED",
-            "The path below yawns open",
-            "The gate to deeper ruins now answers your vow.",
+            "The gate opens",
+            "A deeper wound in the sanctuary now stands before you.",
             1.6f);
     }
 
@@ -805,7 +784,7 @@ public class FloorFlowManager : MonoBehaviour
         int floorNumber = DemoRunManager.Instance != null ? Mathf.Max(1, DemoRunManager.Instance.CurrentFloor) : 1;
         ShowTitleCard(
             "FLOOR " + floorNumber,
-            GetFloorThemeName(floorNumber),
+            "STAGE: " + GetFloorThemeName(floorNumber),
             GetFloorFlavorText(floorNumber),
             1.8f);
     }
@@ -859,7 +838,7 @@ public class FloorFlowManager : MonoBehaviour
         yield return StartCoroutine(FadeOverlayRoutine(0f, 0.88f, 0.28f));
 
         AdvanceToNextFloor();
-        ShowEventMessage("You descend deeper into the broken sanctuary.");
+        ShowEventMessage("Floor " + (DemoRunManager.Instance != null ? Mathf.Max(1, DemoRunManager.Instance.CurrentFloor) : 1) + " begins.");
 
         yield return new WaitForSeconds(0.08f);
         yield return StartCoroutine(FadeOverlayRoutine(0.88f, 0f, 0.32f));

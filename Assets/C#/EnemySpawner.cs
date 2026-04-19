@@ -22,6 +22,7 @@ public class EnemySpawner : MonoBehaviour
     private float eliteChance;
     private Color enemyTint = Color.white;
     private Color eliteTint = new Color(0.78f, 0.26f, 0.3f, 1f);
+    private CorruptionSystem corruptionSystem;
 
     private void Update()
     {
@@ -30,8 +31,9 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
+        EnsureReferences();
         timer += Time.deltaTime;
-        if (timer < spawnInterval)
+        if (timer < GetEffectiveSpawnInterval())
         {
             return;
         }
@@ -53,7 +55,15 @@ public class EnemySpawner : MonoBehaviour
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
         Vector3 spawnPosition = transform.position + new Vector3(randomDirection.x, randomDirection.y, 0f) * spawnRadius;
         GameObject enemyInstance = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        ApplyEnemyModifiers(enemyInstance, Random.value < eliteChance);
+        ApplyEnemyModifiers(enemyInstance, Random.value < GetEffectiveEliteChance());
+    }
+
+    private void EnsureReferences()
+    {
+        if (corruptionSystem == null)
+        {
+            corruptionSystem = FindObjectOfType<CorruptionSystem>();
+        }
     }
 
     private void ApplyEnemyModifiers(GameObject enemyInstance, bool spawnElite)
@@ -122,5 +132,28 @@ public class EnemySpawner : MonoBehaviour
         enemyTint = newEnemyTint;
         eliteTint = newEliteTint;
         timer = 0f;
+    }
+
+    private float GetEffectiveSpawnInterval()
+    {
+        float interval = spawnInterval;
+        if (corruptionSystem == null)
+        {
+            return Mathf.Max(0.2f, interval);
+        }
+
+        interval *= 1f + corruptionSystem.GetSpawnIntervalModifier();
+        return Mathf.Max(0.2f, interval);
+    }
+
+    private float GetEffectiveEliteChance()
+    {
+        float chance = eliteChance;
+        if (corruptionSystem != null)
+        {
+            chance += corruptionSystem.GetEliteRateBonus();
+        }
+
+        return Mathf.Clamp01(chance);
     }
 }

@@ -11,6 +11,14 @@ public class LevelUpUI : MonoBehaviour
         public UpgradeOptionData data;
     }
 
+    private sealed class OfferCardView
+    {
+        public Button button;
+        public TMP_Text categoryText;
+        public TMP_Text titleText;
+        public TMP_Text descriptionText;
+    }
+
     private const string DefaultLibraryResourcePath = "DefaultUpgradeOptionLibrary";
     private const string UpgradeTitleText = "\u9009\u62e9\u6210\u957f\u65b9\u5411";
     private const string UpgradeSubtitleText = "\u5b88\u4f4f\u6b8b\u8a93\uff0c\u6216\u8fdb\u4e00\u6b65\u62e5\u62b1\u8150\u5316";
@@ -39,14 +47,18 @@ public class LevelUpUI : MonoBehaviour
     [Header("Presentation")]
     [SerializeField] private Color panelTint = new Color(0.05f, 0.03f, 0.05f, 0.94f);
     [SerializeField] private Vector2 panelSize = new Vector2(760f, 540f);
-    [SerializeField] private Vector2 optionButtonSize = new Vector2(240f, 72f);
-    [SerializeField] private Color buttonHighlightColor = new Color(0.38f, 0.19f, 0.2f, 1f);
-    [SerializeField] private Color buttonPressedColor = new Color(0.11f, 0.07f, 0.08f, 1f);
+    [SerializeField] private Vector2 optionButtonSize = new Vector2(212f, 250f);
+    [SerializeField] private Vector2 optionsAreaSize = new Vector2(684f, 290f);
+    [SerializeField] private float optionCardSpacing = 16f;
+    [SerializeField] private Color buttonHighlightColor = new Color(0.92f, 0.84f, 0.74f, 0.14f);
+    [SerializeField] private Color buttonPressedColor = new Color(0.96f, 0.88f, 0.8f, 0.22f);
     [SerializeField] private float buttonFadeDuration = 0.08f;
     [SerializeField] private Color frameColor = new Color(0.56f, 0.4f, 0.28f, 0.62f);
     [SerializeField] private Color headerAccentColor = new Color(0.52f, 0.16f, 0.17f, 0.82f);
     [SerializeField] private Color subtitleColor = new Color(0.76f, 0.74f, 0.8f, 1f);
     [SerializeField] private Color tendencyPlateColor = new Color(0.14f, 0.08f, 0.11f, 0.82f);
+    [SerializeField] private Color panelBackPlateColor = new Color(0.015f, 0.012f, 0.02f, 0.82f);
+    [SerializeField] private Color cardHoverFrameColor = new Color(0.9f, 0.82f, 0.72f, 0.26f);
 
     private PlayerController player;
     private PlayerHealth playerHealth;
@@ -59,6 +71,7 @@ public class LevelUpUI : MonoBehaviour
     private TMP_Text subtitleLabel;
     private TMP_Text tendencyLabel;
     private readonly SkillOffer[] activeOffers = new SkillOffer[3];
+    private readonly OfferCardView[] offerCardViews = new OfferCardView[3];
 
     private void Start()
     {
@@ -174,6 +187,7 @@ public class LevelUpUI : MonoBehaviour
             panelRect.sizeDelta = panelSize;
         }
 
+        EnsureOptionsLayout();
         EnsurePanelChrome();
 
         titleLabel = EnsureTextElement("UpgradeTitle", UpgradeTitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -28f), new Vector2(400f, 36f), 28, new Color(0.96f, 0.9f, 0.78f, 1f));
@@ -414,24 +428,35 @@ public class LevelUpUI : MonoBehaviour
             tendencyLabel.text = corruptionSystem.GetAlignmentSummary();
         }
 
-        RefreshOfferView(attackButton, attackLabel, activeOffers[0]);
-        RefreshOfferView(healButton, healLabel, activeOffers[1]);
-        RefreshOfferView(speedButton, speedLabel, activeOffers[2]);
+        RefreshOfferView(offerCardViews[0], activeOffers[0]);
+        RefreshOfferView(offerCardViews[1], activeOffers[1]);
+        RefreshOfferView(offerCardViews[2], activeOffers[2]);
     }
 
-    private void RefreshOfferView(Button button, TMP_Text label, SkillOffer offer)
+    private void RefreshOfferView(OfferCardView cardView, SkillOffer offer)
     {
-        if (button == null || label == null || offer.data == null)
+        if (cardView == null || cardView.button == null || offer.data == null)
         {
             return;
         }
 
         string categoryLabel = BuildCategoryLabel(offer.data.category);
-        label.text = "<size=62%><color=#C7AE8C>" + categoryLabel + "</color></size>\n" +
-                     "<size=112%><b>" + offer.data.title + "</b></size>\n" +
-                     "<size=74%>" + offer.data.description + "</size>";
+        if (cardView.categoryText != null)
+        {
+            cardView.categoryText.text = categoryLabel;
+        }
 
-        Image image = button.GetComponent<Image>();
+        if (cardView.titleText != null)
+        {
+            cardView.titleText.text = offer.data.title;
+        }
+
+        if (cardView.descriptionText != null)
+        {
+            cardView.descriptionText.text = offer.data.description;
+        }
+
+        Image image = cardView.button.GetComponent<Image>();
         if (image == null)
         {
             return;
@@ -441,18 +466,18 @@ public class LevelUpUI : MonoBehaviour
         {
             case UpgradeCategory.Oath:
                 image.color = new Color(0.18f, 0.24f, 0.29f, 1f);
-                label.color = new Color(0.96f, 0.94f, 0.86f, 1f);
-                UpdateButtonChrome(button, new Color(0.63f, 0.69f, 0.76f, 0.8f), new Color(0.22f, 0.31f, 0.39f, 0.55f));
+                ApplyCardTextColors(cardView, new Color(0.79f, 0.84f, 0.9f, 0.95f), new Color(0.96f, 0.94f, 0.86f, 1f), new Color(0.83f, 0.87f, 0.9f, 0.92f));
+                UpdateButtonChrome(cardView.button, new Color(0.63f, 0.69f, 0.76f, 0.8f), new Color(0.22f, 0.31f, 0.39f, 0.55f));
                 break;
             case UpgradeCategory.Corruption:
                 image.color = new Color(0.36f, 0.14f, 0.16f, 1f);
-                label.color = new Color(0.98f, 0.90f, 0.92f, 1f);
-                UpdateButtonChrome(button, new Color(0.77f, 0.43f, 0.37f, 0.85f), new Color(0.34f, 0.1f, 0.14f, 0.62f));
+                ApplyCardTextColors(cardView, new Color(0.9f, 0.66f, 0.64f, 0.95f), new Color(0.98f, 0.90f, 0.92f, 1f), new Color(0.94f, 0.81f, 0.83f, 0.92f));
+                UpdateButtonChrome(cardView.button, new Color(0.77f, 0.43f, 0.37f, 0.85f), new Color(0.34f, 0.1f, 0.14f, 0.62f));
                 break;
             default:
                 image.color = new Color(0.22f, 0.22f, 0.22f, 1f);
-                label.color = new Color(0.92f, 0.92f, 0.92f, 1f);
-                UpdateButtonChrome(button, new Color(0.66f, 0.62f, 0.52f, 0.72f), new Color(0.2f, 0.2f, 0.2f, 0.48f));
+                ApplyCardTextColors(cardView, new Color(0.8f, 0.78f, 0.69f, 0.95f), new Color(0.92f, 0.92f, 0.92f, 1f), new Color(0.84f, 0.84f, 0.82f, 0.92f));
+                UpdateButtonChrome(cardView.button, new Color(0.66f, 0.62f, 0.52f, 0.72f), new Color(0.2f, 0.2f, 0.2f, 0.48f));
                 break;
         }
     }
@@ -587,6 +612,165 @@ public class LevelUpUI : MonoBehaviour
         return text;
     }
 
+    private void EnsureOptionsLayout()
+    {
+        RectTransform optionsRoot = EnsureRectElement(
+            "OptionsRoot",
+            panel.transform,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0f, -56f),
+            optionsAreaSize);
+
+        HorizontalLayoutGroup layout = optionsRoot.GetComponent<HorizontalLayoutGroup>();
+        if (layout == null)
+        {
+            layout = optionsRoot.gameObject.AddComponent<HorizontalLayoutGroup>();
+        }
+        layout.padding = new RectOffset(0, 0, 0, 0);
+        layout.spacing = optionCardSpacing;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = false;
+        layout.childControlHeight = false;
+        layout.childForceExpandWidth = false;
+        layout.childForceExpandHeight = false;
+
+        SetupOfferCard(0, attackButton, optionsRoot, "OathCard");
+        SetupOfferCard(1, healButton, optionsRoot, "CorruptionCard");
+        SetupOfferCard(2, speedButton, optionsRoot, "CommonCard");
+    }
+
+    private void SetupOfferCard(int index, Button button, RectTransform parent, string fallbackName)
+    {
+        if (button == null || parent == null)
+        {
+            return;
+        }
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            return;
+        }
+
+        button.gameObject.name = fallbackName;
+        rect.SetParent(parent, false);
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = optionButtonSize;
+
+        LayoutElement layout = button.GetComponent<LayoutElement>();
+        if (layout == null)
+        {
+            layout = button.gameObject.AddComponent<LayoutElement>();
+        }
+        layout.preferredWidth = optionButtonSize.x;
+        layout.preferredHeight = optionButtonSize.y;
+        layout.minWidth = optionButtonSize.x;
+        layout.minHeight = optionButtonSize.y;
+
+        offerCardViews[index] = EnsureOfferCardView(button);
+        StyleButton(button);
+    }
+
+    private OfferCardView EnsureOfferCardView(Button button)
+    {
+        OfferCardView cardView = new OfferCardView();
+        cardView.button = button;
+        cardView.categoryText = EnsureCardText(button.transform, "CategoryLabel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -18f), new Vector2(-20f, -18f), 12, FontStyles.Bold, TextAlignmentOptions.TopLeft);
+        cardView.titleText = EnsureCardText(button.transform, "TitleLabel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -54f), new Vector2(-20f, -54f), 19, FontStyles.Bold, TextAlignmentOptions.TopLeft);
+        cardView.descriptionText = EnsureCardText(button.transform, "DescriptionLabel", new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(24f, 22f), new Vector2(-20f, -110f), 14, FontStyles.Normal, TextAlignmentOptions.TopLeft);
+
+        cardView.categoryText.verticalAlignment = VerticalAlignmentOptions.Top;
+        cardView.titleText.verticalAlignment = VerticalAlignmentOptions.Top;
+        cardView.descriptionText.verticalAlignment = VerticalAlignmentOptions.Top;
+
+        return cardView;
+    }
+
+    private RectTransform EnsureRectElement(string objectName, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+    {
+        Transform existing = parent.Find(objectName);
+        RectTransform rect;
+
+        if (existing == null)
+        {
+            GameObject rectObject = new GameObject(objectName, typeof(RectTransform));
+            rect = rectObject.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+        }
+        else
+        {
+            rect = existing as RectTransform;
+        }
+
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = anchoredPosition;
+        rect.sizeDelta = sizeDelta;
+        return rect;
+    }
+
+    private TMP_Text EnsureCardText(Transform parent, string objectName, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, float fontSize, FontStyles fontStyle, TextAlignmentOptions alignment)
+    {
+        Transform existing = parent.Find(objectName);
+        TextMeshProUGUI text;
+
+        if (existing == null && objectName == "DescriptionLabel")
+        {
+            TMP_Text legacy = parent.GetComponentInChildren<TMP_Text>(true);
+            if (legacy != null)
+            {
+                existing = legacy.transform;
+            }
+        }
+
+        if (existing == null)
+        {
+            GameObject textObject = new GameObject(objectName, typeof(RectTransform));
+            textObject.transform.SetParent(parent, false);
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
+            text = textObject.AddComponent<TextMeshProUGUI>();
+        }
+        else
+        {
+            text = existing.GetComponent<TextMeshProUGUI>();
+        }
+
+        if (text == null)
+        {
+            return null;
+        }
+
+        text.gameObject.name = objectName;
+        RectTransform textRect = text.GetComponent<RectTransform>();
+        if (textRect != null)
+        {
+            textRect.anchorMin = anchorMin;
+            textRect.anchorMax = anchorMax;
+            textRect.pivot = new Vector2(0.5f, 1f);
+            textRect.offsetMin = offsetMin;
+            textRect.offsetMax = offsetMax;
+        }
+
+        text.fontSize = fontSize;
+        text.fontStyle = fontStyle;
+        text.alignment = alignment;
+        text.richText = false;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.margin = Vector4.zero;
+        StyleBodyText(text);
+        return text;
+    }
+
     private void StyleButton(Button button)
     {
         if (button == null)
@@ -603,9 +787,12 @@ public class LevelUpUI : MonoBehaviour
         EnsureButtonChrome(button);
 
         ColorBlock colors = button.colors;
+        colors.normalColor = new Color(1f, 1f, 1f, 0f);
         colors.highlightedColor = buttonHighlightColor;
         colors.pressedColor = buttonPressedColor;
         colors.selectedColor = colors.highlightedColor;
+        colors.disabledColor = new Color(1f, 1f, 1f, 0.04f);
+        colors.colorMultiplier = 1f;
         colors.fadeDuration = buttonFadeDuration;
         button.colors = colors;
 
@@ -613,28 +800,36 @@ public class LevelUpUI : MonoBehaviour
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
 
-        TMP_Text label = FindLabel(button);
-        if (label != null)
+        Transform hoverOverlay = button.transform.Find("HoverOverlay");
+        if (hoverOverlay != null)
         {
-            label.alignment = TextAlignmentOptions.TopLeft;
-            label.margin = new Vector4(24f, 20f, 20f, 18f);
-            label.textWrappingMode = TextWrappingModes.Normal;
-            label.richText = true;
-            label.lineSpacing = -8f;
-            StyleBodyText(label);
+            button.targetGraphic = hoverOverlay.GetComponent<Image>();
         }
     }
 
     private void EnsurePanelChrome()
     {
+        Image backPlate = EnsureImageElement("BackPlate", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), panelSize + new Vector2(12f, 12f), panelBackPlateColor);
+        Image innerShade = EnsureImageElement("InnerShade", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 0f), panelSize - new Vector2(36f, 40f), new Color(0f, 0f, 0f, 0.08f));
         EnsureImageElement("TopAccent", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(64f, 6f), headerAccentColor);
         EnsureImageElement("HeaderDivider", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -116f), new Vector2(430f, 2f), frameColor);
         EnsureImageElement("AlignmentPlate", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(260f, 24f), tendencyPlateColor);
+        EnsureImageElement("OptionsDivider", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -144f), new Vector2(620f, 1.5f), new Color(frameColor.r, frameColor.g, frameColor.b, frameColor.a * 0.65f));
 
         EnsureFrameEdge("FrameTop", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -12f), new Vector2(-16f, 2f));
         EnsureFrameEdge("FrameBottom", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, 12f), new Vector2(-16f, 2f));
         EnsureFrameEdge("FrameLeft", new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(12f, 0f), new Vector2(2f, -16f));
         EnsureFrameEdge("FrameRight", new Vector2(1f, 0.5f), new Vector2(1f, 1f), new Vector2(-12f, 0f), new Vector2(2f, -16f));
+
+        if (backPlate != null)
+        {
+            backPlate.transform.SetAsFirstSibling();
+        }
+
+        if (innerShade != null)
+        {
+            innerShade.transform.SetSiblingIndex(1);
+        }
     }
 
     private void EnsureFrameEdge(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
@@ -687,9 +882,13 @@ public class LevelUpUI : MonoBehaviour
         }
 
         EnsureChildImage(button.transform, "CardShade", new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), Vector2.zero, new Vector2(-8f, -8f), new Color(0f, 0f, 0f, 0.16f));
-        EnsureChildImage(button.transform, "AccentBar", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(12f, 0f), new Vector2(6f, optionButtonSize.y - 22f), headerAccentColor);
-        EnsureChildImage(button.transform, "TopTrim", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -8f), new Vector2(-18f, 2f), frameColor);
-        EnsureChildImage(button.transform, "BottomTrim", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, 8f), new Vector2(-18f, 2f), new Color(frameColor.r, frameColor.g, frameColor.b, frameColor.a * 0.7f));
+        EnsureChildImage(button.transform, "HoverOverlay", new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), Vector2.zero, new Vector2(-6f, -6f), new Color(1f, 1f, 1f, 0f));
+        EnsureChildImage(button.transform, "HoverFrame", new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), Vector2.zero, new Vector2(-4f, -4f), cardHoverFrameColor);
+        EnsureChildImage(button.transform, "AccentBar", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -34f), new Vector2(6f, 58f), headerAccentColor);
+        EnsureChildImage(button.transform, "TopTrim", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -10f), new Vector2(-18f, 2f), frameColor);
+        EnsureChildImage(button.transform, "BottomTrim", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, 10f), new Vector2(-18f, 2f), new Color(frameColor.r, frameColor.g, frameColor.b, frameColor.a * 0.7f));
+        EnsureChildImage(button.transform, "CategoryPlate", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -16f), new Vector2(-44f, 24f), new Color(0f, 0f, 0f, 0.1f));
+        EnsureChildImage(button.transform, "DescriptionShade", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(-24f, 62f), new Color(0f, 0f, 0f, 0.08f));
     }
 
     private void UpdateButtonChrome(Button button, Color accentColor, Color trimColor)
@@ -722,6 +921,49 @@ public class LevelUpUI : MonoBehaviour
             {
                 bottomImage.color = trimColor;
             }
+        }
+
+        Transform categoryPlate = button.transform.Find("CategoryPlate");
+        if (categoryPlate != null)
+        {
+            Image categoryImage = categoryPlate.GetComponent<Image>();
+            if (categoryImage != null)
+            {
+                categoryImage.color = new Color(trimColor.r, trimColor.g, trimColor.b, 0.16f);
+            }
+        }
+
+        Transform hoverFrame = button.transform.Find("HoverFrame");
+        if (hoverFrame != null)
+        {
+            Image hoverFrameImage = hoverFrame.GetComponent<Image>();
+            if (hoverFrameImage != null)
+            {
+                hoverFrameImage.color = new Color(accentColor.r, accentColor.g, accentColor.b, 0.18f);
+            }
+        }
+    }
+
+    private static void ApplyCardTextColors(OfferCardView cardView, Color categoryColor, Color titleColor, Color descriptionColor)
+    {
+        if (cardView == null)
+        {
+            return;
+        }
+
+        if (cardView.categoryText != null)
+        {
+            cardView.categoryText.color = categoryColor;
+        }
+
+        if (cardView.titleText != null)
+        {
+            cardView.titleText.color = titleColor;
+        }
+
+        if (cardView.descriptionText != null)
+        {
+            cardView.descriptionText.color = descriptionColor;
         }
     }
 

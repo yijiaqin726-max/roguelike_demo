@@ -1270,7 +1270,7 @@ MonoBehaviour:
   - {fileID: 6001001001001001001, guid: 6ee8ec75d8c94fe0a3e2737a0a8bde11, type: 3}
   - {fileID: 6001001001001001002, guid: 2454dd8a70484aef8211dbf33ca1bfca, type: 3}
   - {fileID: 6001001001001001003, guid: 9443cb5ccb37445fbd2a263665307f9e, type: 3}
-  floorDuration: 150
+  floorDuration: 30
   exitDistance: 3.5
   playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &753601276

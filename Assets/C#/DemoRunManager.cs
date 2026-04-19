@@ -210,6 +210,7 @@ public class DemoRunManager : MonoBehaviour
             int loadedCorruption = Mathf.Max(pendingLoadData.corruptionValue, pendingLoadData.currentCorruption);
             corruptionSystem.corruptionValue = Mathf.Clamp(loadedCorruption, 0, corruptionSystem.maxCorruption);
             corruptionSystem.oathValue = Mathf.Clamp(pendingLoadData.oathValue, 0, corruptionSystem.maxOath);
+            corruptionSystem.SyncStage();
         }
 
         pendingLoadData = null;

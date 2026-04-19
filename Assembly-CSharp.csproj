@@ -99,6 +99,7 @@
     <Compile Include="Assets\C#\DemoRunManager.cs" />
     <Compile Include="Assets\C#\EnemySpawner.cs" />
     <Compile Include="Assets\C#\PlayerHitFeedback.cs" />
+    <Compile Include="Assets\C#\FloorExitPortalVisual.cs" />
     <Compile Include="Assets\C#\PlayerExperience.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\C#\GameplayHudLayout.cs" />
