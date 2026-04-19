@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: 7907719f384ee0249ae4665a1337610b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1591235770552299791
+    second: oathbreaker-pixel-sheet-v1_0
+  - first:
+      213: -4256539580697982282
+    second: oathbreaker-pixel-sheet-v1_1
+  - first:
+      213: -1434589227246356574
+    second: oathbreaker-pixel-sheet-v1_2
+  - first:
+      213: -4983455395572022082
+    second: oathbreaker-pixel-sheet-v1_3
+  - first:
+      213: -1278795059594363407
+    second: oathbreaker-pixel-sheet-v1_4
+  - first:
+      213: -4557096238072950447
+    second: oathbreaker-pixel-sheet-v1_5
+  - first:
+      213: 5728840959418427757
+    second: oathbreaker-pixel-sheet-v1_6
+  - first:
+      213: 6954939916727699319
+    second: oathbreaker-pixel-sheet-v1_7
+  - first:
+      213: 5309669381002256350
+    second: oathbreaker-pixel-sheet-v1_8
+  - first:
+      213: 1475000830257131157
+    second: oathbreaker-pixel-sheet-v1_9
+  - first:
+      213: 8425152510011363663
+    second: oathbreaker-pixel-sheet-v1_10
+  - first:
+      213: -3120016057572597641
+    second: oathbreaker-pixel-sheet-v1_11
+  - first:
+      213: -3899241086138068324
+    second: oathbreaker-pixel-sheet-v1_12
+  - first:
+      213: -6063754308607234702
+    second: oathbreaker-pixel-sheet-v1_13
+  - first:
+      213: 5926221823732972027
+    second: oathbreaker-pixel-sheet-v1_14
+  - first:
+      213: 7652106091725018882
+    second: oathbreaker-pixel-sheet-v1_15
+  - first:
+      213: -6519716826414599940
+    second: oathbreaker-pixel-sheet-v1_16
+  - first:
+      213: 6946674750182689700
+    second: oathbreaker-pixel-sheet-v1_17
+  - first:
+      213: 6754143885157523230
+    second: oathbreaker-pixel-sheet-v1_18
+  - first:
+      213: 372944189517908357
+    second: oathbreaker-pixel-sheet-v1_19
+  - first:
+      213: 1844982471293467827
+    second: oathbreaker-pixel-sheet-v1_20
+  - first:
+      213: 8744603300961349707
+    second: oathbreaker-pixel-sheet-v1_21
+  - first:
+      213: -1225810045404849139
+    second: oathbreaker-pixel-sheet-v1_22
+  - first:
+      213: -7665867647568815153
+    second: oathbreaker-pixel-sheet-v1_23
+  - first:
+      213: 9021591495189793081
+    second: oathbreaker-pixel-sheet-v1_24
+  - first:
+      213: 6625739359271570623
+    second: oathbreaker-pixel-sheet-v1_25
+  - first:
+      213: 1258034250082858942
+    second: oathbreaker-pixel-sheet-v1_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 0
+        width: 291
+        height: 1024
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f013aa9a084351610800000000000000
+      internalID: 1591235770552299791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_1
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 606
+        width: 127
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ba4b10bdcbbde4c0800000000000000
+      internalID: -4256539580697982282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_2
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 1
+        width: 363
+        height: 499
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a7f067d2b0571ce0800000000000000
+      internalID: -1434589227246356574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_3
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 710
+        width: 531
+        height: 314
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb40de0a8b537dab0800000000000000
+      internalID: -4983455395572022082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_4
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 697
+        width: 46
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fd7a5c2baec04ee0800000000000000
+      internalID: -1278795059594363407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_5
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 736
+        width: 119
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1519462bd11f1c0c0800000000000000
+      internalID: -4557096238072950447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_6
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 615
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d69e7d8ff7ee08f40800000000000000
+      internalID: 5728840959418427757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_7
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 672
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7774db26109e48060800000000000000
+      internalID: 6954939916727699319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_8
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 630
+        width: 114
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edf58619b2cbfa940800000000000000
+      internalID: 5309669381002256350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_9
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 497
+        width: 181
+        height: 274
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59ee1e2b071487410800000000000000
+      internalID: 1475000830257131157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_10
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 585
+        width: 54
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f41d7b9c1972ce470800000000000000
+      internalID: 8425152510011363663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_11
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 655
+        width: 41
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 770eeda1de973b4d0800000000000000
+      internalID: -3120016057572597641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_12
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 235
+        width: 123
+        height: 454
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c92d12724ec13e9c0800000000000000
+      internalID: -3899241086138068324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_13
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 1
+        width: 214
+        height: 403
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27da83e559739dba0800000000000000
+      internalID: -6063754308607234702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_14
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 688
+        width: 51
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf975c7a95b2e3250800000000000000
+      internalID: 5926221823732972027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_15
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 623
+        width: 34
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2075fd4a2fdb13a60800000000000000
+      internalID: 7652106091725018882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_16
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 629
+        width: 112
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf0bb6dd6105585a0800000000000000
+      internalID: -6519716826414599940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_17
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 417
+        width: 34
+        height: 241
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab80d651eb876060800000000000000
+      internalID: 6946674750182689700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_18
+      rect:
+        serializedVersion: 2
+        x: 811
+        y: 695
+        width: 49
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1fd0bc141a8bbd50800000000000000
+      internalID: 6754143885157523230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_19
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 655
+        width: 23
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 589c241b3c6fc2500800000000000000
+      internalID: 372944189517908357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_20
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 388
+        width: 171
+        height: 636
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bcf44258c1ba9910800000000000000
+      internalID: 1844982471293467827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_21
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 0
+        width: 159
+        height: 404
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b40728f0f521b5970800000000000000
+      internalID: 8744603300961349707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_22
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 311
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0cd981224c0dfee0800000000000000
+      internalID: -1225810045404849139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_23
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1
+        width: 502
+        height: 1023
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcb50837dfd5d9590800000000000000
+      internalID: -7665867647568815153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_24
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 448
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 939097b9aa1233d70800000000000000
+      internalID: 9021591495189793081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_25
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 440
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbcc4b3b7da53fb50800000000000000
+      internalID: 6625739359271570623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: oathbreaker-pixel-sheet-v1_26
+      rect:
+        serializedVersion: 2
+        x: 1109
+        y: 269
+        width: 159
+        height: 131
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb7b67f2c7f657110800000000000000
+      internalID: 1258034250082858942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      oathbreaker-pixel-sheet-v1_0: 1591235770552299791
+      oathbreaker-pixel-sheet-v1_1: -4256539580697982282
+      oathbreaker-pixel-sheet-v1_10: 8425152510011363663
+      oathbreaker-pixel-sheet-v1_11: -3120016057572597641
+      oathbreaker-pixel-sheet-v1_12: -3899241086138068324
+      oathbreaker-pixel-sheet-v1_13: -6063754308607234702
+      oathbreaker-pixel-sheet-v1_14: 5926221823732972027
+      oathbreaker-pixel-sheet-v1_15: 7652106091725018882
+      oathbreaker-pixel-sheet-v1_16: -6519716826414599940
+      oathbreaker-pixel-sheet-v1_17: 6946674750182689700
+      oathbreaker-pixel-sheet-v1_18: 6754143885157523230
+      oathbreaker-pixel-sheet-v1_19: 372944189517908357
+      oathbreaker-pixel-sheet-v1_2: -1434589227246356574
+      oathbreaker-pixel-sheet-v1_20: 1844982471293467827
+      oathbreaker-pixel-sheet-v1_21: 8744603300961349707
+      oathbreaker-pixel-sheet-v1_22: -1225810045404849139
+      oathbreaker-pixel-sheet-v1_23: -7665867647568815153
+      oathbreaker-pixel-sheet-v1_24: 9021591495189793081
+      oathbreaker-pixel-sheet-v1_25: 6625739359271570623
+      oathbreaker-pixel-sheet-v1_26: 1258034250082858942
+      oathbreaker-pixel-sheet-v1_3: -4983455395572022082
+      oathbreaker-pixel-sheet-v1_4: -1278795059594363407
+      oathbreaker-pixel-sheet-v1_5: -4557096238072950447
+      oathbreaker-pixel-sheet-v1_6: 5728840959418427757
+      oathbreaker-pixel-sheet-v1_7: 6954939916727699319
+      oathbreaker-pixel-sheet-v1_8: 5309669381002256350
+      oathbreaker-pixel-sheet-v1_9: 1475000830257131157
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
