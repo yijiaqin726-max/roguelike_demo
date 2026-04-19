@@ -31,25 +31,21 @@ public class CorruptionSystem : MonoBehaviour
     public void AddCorruption(int amount)
     {
         corruptionValue = Mathf.Clamp(corruptionValue + amount, 0, maxCorruption);
-        Debug.Log("Corruption Increased: " + corruptionValue + "/" + maxCorruption);
     }
 
     public void ReduceCorruption(int amount)
     {
         corruptionValue = Mathf.Clamp(corruptionValue - amount, 0, maxCorruption);
-        Debug.Log("Corruption Reduced: " + corruptionValue + "/" + maxCorruption);
     }
 
     public void AddOath(int amount)
     {
         oathValue = Mathf.Clamp(oathValue + amount, 0, maxOath);
-        Debug.Log("Oath Increased: " + oathValue + "/" + maxOath);
     }
 
     public void ReduceOath(int amount)
     {
         oathValue = Mathf.Clamp(oathValue - amount, 0, maxOath);
-        Debug.Log("Oath Reduced: " + oathValue + "/" + maxOath);
     }
 
     public float GetCorruptionRatio()

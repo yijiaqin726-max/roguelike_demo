@@ -39,11 +39,21 @@ public class FloorFlowManager : MonoBehaviour
     private Text timerLabel;
     private Text waveLabel;
     private Text eventLabel;
+    private Text promptLabel;
+    private Text titleCardFloorLabel;
+    private Text titleCardNameLabel;
+    private Text titleCardFlavorLabel;
     private Font uiFont;
     private Sprite cachedWhiteSprite;
     private int currentWaveIndex = -1;
     private Coroutine eventRoutine;
+    private Coroutine transitionRoutine;
+    private Coroutine titleCardRoutine;
     private CorruptionSystem corruptionSystem;
+    private Image fadeOverlay;
+    private GameObject promptPlate;
+    private GameObject titleCardPlate;
+    private bool transitionInProgress;
 
     private void Start()
     {
@@ -55,7 +65,7 @@ public class FloorFlowManager : MonoBehaviour
 
     private void Update()
     {
-        if (exitSpawned)
+        if (exitSpawned || transitionInProgress)
         {
             return;
         }
@@ -76,12 +86,14 @@ public class FloorFlowManager : MonoBehaviour
         EnsureReferences();
         EnsureDefaultWaveStages();
         RemovePortal();
+        SetPortalPromptVisible(false);
         ApplyFloorBackground();
         ClearFloorActors();
         ResetPlayerPosition();
         remainingTime = floorDuration;
         elapsedTime = 0f;
         exitSpawned = false;
+        transitionInProgress = false;
         currentWaveIndex = -1;
 
         if (enemySpawner != null)
@@ -91,6 +103,7 @@ public class FloorFlowManager : MonoBehaviour
 
         UpdateWaveStage();
         UpdateTimerLabel();
+        ShowFloorIntroTitle();
     }
 
     public void AdvanceToNextFloor()
@@ -101,6 +114,31 @@ public class FloorFlowManager : MonoBehaviour
         }
 
         BeginFloor();
+    }
+
+    public void TryEnterExitPortal(FloorExitPortal portal)
+    {
+        if (transitionInProgress || portal == null || portal != activePortal)
+        {
+            return;
+        }
+
+        if (transitionRoutine != null)
+        {
+            StopCoroutine(transitionRoutine);
+        }
+
+        transitionRoutine = StartCoroutine(TransitionToNextFloorRoutine());
+    }
+
+    public void SetPortalPromptVisible(bool visible)
+    {
+        if (promptPlate == null)
+        {
+            return;
+        }
+
+        promptPlate.SetActive(visible && exitSpawned && !transitionInProgress);
     }
 
     private void EnsureReferences()
@@ -233,6 +271,7 @@ public class FloorFlowManager : MonoBehaviour
             enemySpawner.SetSpawnEnabled(false);
         }
 
+        ShowFloorClearTitle();
         ShowEventMessage("The gate to the next floor has opened.");
 
         Vector3 portalPosition = playerSpawnPosition + Vector3.up * exitDistance;
@@ -335,7 +374,9 @@ public class FloorFlowManager : MonoBehaviour
 
         CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1280f, 720f);
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.6f;
 
         canvasObject.AddComponent<GraphicRaycaster>();
 
@@ -344,21 +385,23 @@ public class FloorFlowManager : MonoBehaviour
         plateRect.anchorMin = new Vector2(0.5f, 1f);
         plateRect.anchorMax = new Vector2(0.5f, 1f);
         plateRect.pivot = new Vector2(0.5f, 1f);
-        plateRect.anchoredPosition = new Vector2(0f, -14f);
-        plateRect.sizeDelta = new Vector2(270f, 78f);
+        plateRect.anchoredPosition = new Vector2(0f, -16f);
+        plateRect.sizeDelta = new Vector2(340f, 104f);
 
         CreateFrameLine(plate.transform, "PlateTop", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -2f), new Vector2(0f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.85f));
         CreateFrameLine(plate.transform, "PlateBottom", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 2f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
+        CreateFrameLine(plate.transform, "PlateLeft", new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(2f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
+        CreateFrameLine(plate.transform, "PlateRight", new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-2f, 0f), new Vector2(0f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
 
         timerLabel = CreateText(
             "FloorTimerLabel",
             plate.transform,
             "02:30",
-            30,
+            42,
             new Color(0.95f, 0.92f, 0.84f, 1f),
             TextAnchor.MiddleCenter,
-            new Vector2(0f, -10f),
-            new Vector2(240f, 34f),
+            new Vector2(0f, -18f),
+            new Vector2(300f, 44f),
             FontStyle.Bold,
             new Vector2(0.5f, 1f),
             new Vector2(0.5f, 1f),
@@ -368,11 +411,11 @@ public class FloorFlowManager : MonoBehaviour
             "WaveLabel",
             plate.transform,
             "Stage: Ashen Approach",
-            13,
+            16,
             new Color(0.77f, 0.74f, 0.7f, 1f),
             TextAnchor.MiddleCenter,
-            new Vector2(0f, -42f),
-            new Vector2(240f, 20f),
+            new Vector2(0f, -64f),
+            new Vector2(290f, 24f),
             FontStyle.Normal,
             new Vector2(0.5f, 1f),
             new Vector2(0.5f, 1f),
@@ -383,22 +426,107 @@ public class FloorFlowManager : MonoBehaviour
         eventPlateRect.anchorMin = new Vector2(0.5f, 1f);
         eventPlateRect.anchorMax = new Vector2(0.5f, 1f);
         eventPlateRect.pivot = new Vector2(0.5f, 1f);
-        eventPlateRect.anchoredPosition = new Vector2(0f, -96f);
-        eventPlateRect.sizeDelta = new Vector2(520f, 34f);
+        eventPlateRect.anchoredPosition = new Vector2(0f, -128f);
+        eventPlateRect.sizeDelta = new Vector2(620f, 42f);
 
         eventLabel = CreateText(
             "CorruptionEventLabel",
             eventPlate.transform,
             string.Empty,
-            18,
+            20,
             new Color(0.96f, 0.86f, 0.88f, 0f),
             TextAnchor.MiddleCenter,
             new Vector2(0f, 0f),
-            new Vector2(490f, 24f),
+            new Vector2(580f, 28f),
             FontStyle.Bold,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f));
+
+        promptPlate = CreateImageObject("PortalPromptPlate", canvasObject.transform, new Color(0.09f, 0.06f, 0.07f, 0.84f), true);
+        RectTransform promptPlateRect = promptPlate.GetComponent<RectTransform>();
+        promptPlateRect.anchorMin = new Vector2(0.5f, 0f);
+        promptPlateRect.anchorMax = new Vector2(0.5f, 0f);
+        promptPlateRect.pivot = new Vector2(0.5f, 0f);
+        promptPlateRect.anchoredPosition = new Vector2(0f, 52f);
+        promptPlateRect.sizeDelta = new Vector2(360f, 42f);
+
+        promptLabel = CreateText(
+            "PortalPromptLabel",
+            promptPlate.transform,
+            "Press E to Descend",
+            20,
+            new Color(0.97f, 0.92f, 0.84f, 1f),
+            TextAnchor.MiddleCenter,
+            Vector2.zero,
+            new Vector2(320f, 26f),
+            FontStyle.Bold,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
+        promptPlate.SetActive(false);
+
+        titleCardPlate = CreateImageObject("FloorTitleCard", canvasObject.transform, new Color(0.07f, 0.04f, 0.05f, 0.88f), true);
+        RectTransform titlePlateRect = titleCardPlate.GetComponent<RectTransform>();
+        titlePlateRect.anchorMin = new Vector2(0.5f, 0.5f);
+        titlePlateRect.anchorMax = new Vector2(0.5f, 0.5f);
+        titlePlateRect.pivot = new Vector2(0.5f, 0.5f);
+        titlePlateRect.anchoredPosition = new Vector2(0f, 18f);
+        titlePlateRect.sizeDelta = new Vector2(560f, 136f);
+        CreateFrameLine(titleCardPlate.transform, "TitleTop", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(20f, -2f), new Vector2(-20f, 0f), new Color(0.62f, 0.47f, 0.32f, 0.82f));
+        CreateFrameLine(titleCardPlate.transform, "TitleBottom", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, 0f), new Vector2(-20f, 2f), new Color(0.62f, 0.47f, 0.32f, 0.45f));
+
+        titleCardFloorLabel = CreateText(
+            "TitleCardFloorLabel",
+            titleCardPlate.transform,
+            "FLOOR 1",
+            22,
+            new Color(0.87f, 0.76f, 0.62f, 1f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, 42f),
+            new Vector2(420f, 28f),
+            FontStyle.Bold,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
+
+        titleCardNameLabel = CreateText(
+            "TitleCardNameLabel",
+            titleCardPlate.transform,
+            "Ashen Chapel",
+            34,
+            new Color(0.97f, 0.92f, 0.84f, 1f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, 8f),
+            new Vector2(500f, 42f),
+            FontStyle.Bold,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
+
+        titleCardFlavorLabel = CreateText(
+            "TitleCardFlavorLabel",
+            titleCardPlate.transform,
+            "Corruption deepens...",
+            18,
+            new Color(0.84f, 0.72f, 0.74f, 1f),
+            TextAnchor.MiddleCenter,
+            new Vector2(0f, -34f),
+            new Vector2(470f, 26f),
+            FontStyle.Italic,
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f));
+        titleCardPlate.SetActive(false);
+
+        GameObject fadeObject = CreateImageObject("FloorFadeOverlay", canvasObject.transform, new Color(0.02f, 0.01f, 0.02f, 0f), false);
+        RectTransform fadeRect = fadeObject.GetComponent<RectTransform>();
+        fadeRect.anchorMin = Vector2.zero;
+        fadeRect.anchorMax = Vector2.one;
+        fadeRect.offsetMin = Vector2.zero;
+        fadeRect.offsetMax = Vector2.zero;
+        fadeOverlay = fadeObject.GetComponent<Image>();
+        fadeOverlay.raycastTarget = false;
     }
 
     private void UpdateTimerLabel()
@@ -413,7 +541,7 @@ public class FloorFlowManager : MonoBehaviour
             timerLabel.text = "GATE OPEN";
             if (waveLabel != null)
             {
-                waveLabel.text = "Stage: Extraction";
+                waveLabel.text = "Stage: Descend";
             }
             return;
         }
@@ -515,6 +643,129 @@ public class FloorFlowManager : MonoBehaviour
         eventRoutine = null;
     }
 
+    private void ShowFloorClearTitle()
+    {
+        ShowTitleCard(
+            "FLOOR CLEARED",
+            "The path below yawns open",
+            "The gate to deeper ruins now answers your vow.",
+            1.6f);
+    }
+
+    private void ShowFloorIntroTitle()
+    {
+        int floorNumber = DemoRunManager.Instance != null ? Mathf.Max(1, DemoRunManager.Instance.CurrentFloor) : 1;
+        ShowTitleCard(
+            "FLOOR " + floorNumber,
+            GetFloorThemeName(floorNumber),
+            GetFloorFlavorText(floorNumber),
+            1.8f);
+    }
+
+    private void ShowTitleCard(string header, string title, string flavor, float holdDuration)
+    {
+        if (titleCardPlate == null || titleCardFloorLabel == null || titleCardNameLabel == null || titleCardFlavorLabel == null)
+        {
+            return;
+        }
+
+        if (titleCardRoutine != null)
+        {
+            StopCoroutine(titleCardRoutine);
+        }
+
+        titleCardRoutine = StartCoroutine(TitleCardRoutine(header, title, flavor, holdDuration));
+    }
+
+    private IEnumerator TitleCardRoutine(string header, string title, string flavor, float holdDuration)
+    {
+        titleCardFloorLabel.text = header;
+        titleCardNameLabel.text = title;
+        titleCardFlavorLabel.text = flavor;
+        titleCardPlate.SetActive(true);
+
+        CanvasGroup group = titleCardPlate.GetComponent<CanvasGroup>();
+        if (group == null)
+        {
+            group = titleCardPlate.AddComponent<CanvasGroup>();
+        }
+
+        yield return StartCoroutine(FadeCanvasGroupRoutine(group, 0f, 1f, 0.2f));
+        yield return new WaitForSeconds(holdDuration);
+        yield return StartCoroutine(FadeCanvasGroupRoutine(group, 1f, 0f, 0.35f));
+
+        titleCardPlate.SetActive(false);
+        titleCardRoutine = null;
+    }
+
+    private IEnumerator TransitionToNextFloorRoutine()
+    {
+        transitionInProgress = true;
+        SetPortalPromptVisible(false);
+
+        if (enemySpawner != null)
+        {
+            enemySpawner.SetSpawnEnabled(false);
+        }
+
+        yield return StartCoroutine(FadeOverlayRoutine(0f, 0.88f, 0.28f));
+
+        AdvanceToNextFloor();
+        ShowEventMessage("You descend deeper into the broken sanctuary.");
+
+        yield return new WaitForSeconds(0.08f);
+        yield return StartCoroutine(FadeOverlayRoutine(0.88f, 0f, 0.32f));
+
+        transitionInProgress = false;
+        transitionRoutine = null;
+    }
+
+    private IEnumerator FadeCanvasGroupRoutine(CanvasGroup group, float from, float to, float duration)
+    {
+        if (group == null)
+        {
+            yield break;
+        }
+
+        float elapsed = 0f;
+        group.alpha = from;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = duration <= 0f ? 1f : Mathf.Clamp01(elapsed / duration);
+            group.alpha = Mathf.Lerp(from, to, t);
+            yield return null;
+        }
+
+        group.alpha = to;
+    }
+
+    private IEnumerator FadeOverlayRoutine(float fromAlpha, float toAlpha, float duration)
+    {
+        if (fadeOverlay == null)
+        {
+            yield break;
+        }
+
+        float elapsed = 0f;
+        Color color = fadeOverlay.color;
+        color.a = fromAlpha;
+        fadeOverlay.color = color;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = duration <= 0f ? 1f : Mathf.Clamp01(elapsed / duration);
+            color.a = Mathf.Lerp(fromAlpha, toAlpha, t);
+            fadeOverlay.color = color;
+            yield return null;
+        }
+
+        color.a = toAlpha;
+        fadeOverlay.color = color;
+    }
+
     private GameObject CreateImageObject(string name, Transform parent, Color color, bool sliced)
     {
         GameObject imageObject = new GameObject(name);
@@ -609,5 +860,38 @@ public class FloorFlowManager : MonoBehaviour
         }
 
         return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+    }
+
+    private static string GetFloorThemeName(int floorNumber)
+    {
+        switch ((Mathf.Max(1, floorNumber) - 1) % 3)
+        {
+            case 0:
+                return "Ashen Chapel";
+            case 1:
+                return "Blighted Wilds";
+            default:
+                return "Sunken Badlands";
+        }
+    }
+
+    private static string GetFloorFlavorText(int floorNumber)
+    {
+        if (floorNumber <= 1)
+        {
+            return "The air is still. The first vow has not yet broken.";
+        }
+
+        if (floorNumber <= 3)
+        {
+            return "Corruption deepens. The old sanctity no longer answers.";
+        }
+
+        if (floorNumber <= 6)
+        {
+            return "The deeper halls remember every broken oath.";
+        }
+
+        return "Only ash, ruin, and a dying light remain below.";
     }
 }

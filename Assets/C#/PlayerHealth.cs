@@ -25,7 +25,6 @@ public class PlayerHealth : MonoBehaviour
         int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * incomingDamageMultiplier));
         currentHealth -= finalDamage;
         currentHealth = Mathf.Max(0, currentHealth);
-        Debug.Log("Player Health: " + currentHealth);
         Damaged?.Invoke(finalDamage);
 
         if (currentHealth <= 0)
@@ -57,7 +56,6 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Game Over");
         Time.timeScale = 0f;
     }
 }

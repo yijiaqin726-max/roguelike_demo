@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 [DefaultExecutionOrder(-1000)]
 public class DemoRunManager : MonoBehaviour
@@ -12,6 +13,9 @@ public class DemoRunManager : MonoBehaviour
     private const string StartRunText = "\u5f00\u59cb\u5f81\u9014";
     private const string ContinueRunText = "\u7ee7\u7eed\u5f81\u9014";
     private const string QuitText = "\u9000\u51fa\u6e38\u620f";
+    private const string StartRunHintText = "\u8e0f\u5165\u88ab\u8150\u5316\u7684\u5723\u57df";
+    private const string ContinueRunHintText = "\u5ef6\u7eed\u5c1a\u672a\u7ec8\u7ed3\u7684\u8a93\u7ea6";
+    private const string QuitHintText = "\u8ba9\u7070\u70ec\u6682\u65f6\u6c89\u5bc2";
 
     public static DemoRunManager Instance { get; private set; }
 
@@ -280,32 +284,51 @@ public class DemoRunManager : MonoBehaviour
 
         canvasObject.AddComponent<GraphicRaycaster>();
 
-        GameObject overlay = CreatePanel("Overlay", canvasObject.transform, new Color(0.04f, 0.06f, 0.09f, 0.92f));
+        GameObject overlay = CreatePanel("Overlay", canvasObject.transform, new Color(0.03f, 0.04f, 0.06f, 0.94f));
         StretchToFullScreen(overlay.GetComponent<RectTransform>());
 
-        GameObject centerPlate = CreatePanel("CenterPlate", overlay.transform, new Color(0.06f, 0.04f, 0.06f, 0.78f));
-        SetRect(centerPlate.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -8f), new Vector2(620f, 360f));
+        GameObject vignette = CreatePanel("Vignette", overlay.transform, new Color(0.12f, 0.03f, 0.04f, 0.12f));
+        StretchToFullScreen(vignette.GetComponent<RectTransform>());
+
+        GameObject centerPlate = CreatePanel("CenterPlate", overlay.transform, new Color(0.07f, 0.04f, 0.06f, 0.9f));
+        SetRect(centerPlate.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -8f), new Vector2(670f, 404f));
+        AddFrame(centerPlate.transform, new Color(0.52f, 0.37f, 0.26f, 0.7f), 2f, new Vector2(18f, 18f));
+        CreatePanel("InnerShade", centerPlate.transform, new Color(0.15f, 0.04f, 0.05f, 0.14f));
+        StretchToFullScreen(centerPlate.transform.Find("InnerShade").GetComponent<RectTransform>());
+        CreateDivider(centerPlate.transform, new Vector2(0.5f, 0.68f), new Vector2(436f, 2f), new Color(0.63f, 0.46f, 0.33f, 0.65f));
+        CreateDivider(centerPlate.transform, new Vector2(0.5f, 0.23f), new Vector2(360f, 1.5f), new Color(0.52f, 0.22f, 0.24f, 0.55f));
+
+        GameObject crest = CreatePanel("Crest", centerPlate.transform, new Color(0.55f, 0.17f, 0.16f, 0.82f));
+        SetRect(crest.GetComponent<RectTransform>(), new Vector2(0.5f, 0.87f), new Vector2(0.5f, 0.87f), Vector2.zero, new Vector2(58f, 6f));
 
         Text titleText = CreateText("Title", centerPlate.transform, MenuTitleText, 42, new Color(0.96f, 0.9f, 0.78f), TextAnchor.MiddleCenter);
-        SetRect(titleText.rectTransform, new Vector2(0.5f, 0.74f), new Vector2(0.5f, 0.74f), Vector2.zero, new Vector2(420f, 60f));
+        SetRect(titleText.rectTransform, new Vector2(0.5f, 0.76f), new Vector2(0.5f, 0.76f), Vector2.zero, new Vector2(460f, 60f));
+        StyleText(titleText, FontStyle.Bold, new Color(0.18f, 0.04f, 0.05f, 0.75f));
 
         Text mottoText = CreateText("Motto", centerPlate.transform, MenuMottoText, 14, new Color(0.74f, 0.56f, 0.56f), TextAnchor.MiddleCenter);
-        SetRect(mottoText.rectTransform, new Vector2(0.5f, 0.64f), new Vector2(0.5f, 0.64f), Vector2.zero, new Vector2(500f, 24f));
+        SetRect(mottoText.rectTransform, new Vector2(0.5f, 0.66f), new Vector2(0.5f, 0.66f), Vector2.zero, new Vector2(540f, 24f));
+        StyleText(mottoText, FontStyle.Italic, new Color(0.08f, 0.02f, 0.03f, 0.82f));
 
         Text subtitleText = CreateText("Subtitle", centerPlate.transform, MenuSubtitleText, 18, new Color(0.79f, 0.76f, 0.82f), TextAnchor.MiddleCenter);
-        SetRect(subtitleText.rectTransform, new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), Vector2.zero, new Vector2(620f, 40f));
+        SetRect(subtitleText.rectTransform, new Vector2(0.5f, 0.57f), new Vector2(0.5f, 0.57f), Vector2.zero, new Vector2(620f, 40f));
+        StyleText(subtitleText, FontStyle.Normal, new Color(0.07f, 0.03f, 0.05f, 0.78f));
 
-        Button startButton = CreateButton("StartButton", centerPlate.transform, StartRunText, new Vector2(0.5f, 0.39f), new Color(0.32f, 0.12f, 0.13f, 0.96f));
+        Button startButton = CreateButton("StartButton", centerPlate.transform, StartRunText, StartRunHintText, new Vector2(0.5f, 0.39f), new Color(0.3f, 0.11f, 0.12f, 0.97f), new Color(0.69f, 0.43f, 0.28f, 0.85f));
         startButton.onClick.AddListener(StartNewRun);
 
-        continueButton = CreateButton("ContinueButton", centerPlate.transform, ContinueRunText, new Vector2(0.5f, 0.27f), new Color(0.16f, 0.18f, 0.24f, 0.96f));
+        continueButton = CreateButton("ContinueButton", centerPlate.transform, ContinueRunText, ContinueRunHintText, new Vector2(0.5f, 0.27f), new Color(0.12f, 0.14f, 0.2f, 0.96f), new Color(0.47f, 0.51f, 0.6f, 0.82f));
         continueButton.onClick.AddListener(ContinueRun);
 
-        Button quitButton = CreateButton("QuitButton", centerPlate.transform, QuitText, new Vector2(0.5f, 0.15f), new Color(0.12f, 0.12f, 0.14f, 0.92f));
+        Button quitButton = CreateButton("QuitButton", centerPlate.transform, QuitText, QuitHintText, new Vector2(0.5f, 0.15f), new Color(0.1f, 0.1f, 0.12f, 0.94f), new Color(0.42f, 0.33f, 0.3f, 0.72f));
         quitButton.onClick.AddListener(QuitGame);
 
-        floorLabel = CreateText("FloorLabel", canvasObject.transform, BuildFloorLabelText(1), 20, new Color(0.92f, 0.94f, 0.96f), TextAnchor.MiddleRight);
-        SetRect(floorLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(180f, 30f));
+        GameObject floorPlate = CreatePanel("FloorPlate", canvasObject.transform, new Color(0.06f, 0.05f, 0.08f, 0.84f));
+        SetRect(floorPlate.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-92f, -28f), new Vector2(188f, 40f));
+        AddFrame(floorPlate.transform, new Color(0.48f, 0.37f, 0.26f, 0.62f), 2f, new Vector2(10f, 10f));
+
+        floorLabel = CreateText("FloorLabel", floorPlate.transform, BuildFloorLabelText(1), 19, new Color(0.92f, 0.9f, 0.82f), TextAnchor.MiddleCenter);
+        StretchToFullScreen(floorLabel.rectTransform);
+        StyleText(floorLabel, FontStyle.Bold, new Color(0.08f, 0.02f, 0.03f, 0.76f));
 
         RefreshContinueButtonState();
         UpdateFloorLabel();
@@ -331,22 +354,35 @@ public class DemoRunManager : MonoBehaviour
         return panel;
     }
 
-    private Button CreateButton(string name, Transform parent, string label, Vector2 anchor, Color baseColor)
+    private Button CreateButton(string name, Transform parent, string label, string sublabel, Vector2 anchor, Color baseColor, Color accentColor)
     {
         GameObject buttonObject = CreatePanel(name, parent, baseColor);
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        SetRect(rect, anchor, anchor, Vector2.zero, new Vector2(250f, 56f));
+        SetRect(rect, anchor, anchor, Vector2.zero, new Vector2(310f, 66f));
 
         Button button = buttonObject.AddComponent<Button>();
         ColorBlock colors = button.colors;
         colors.normalColor = baseColor;
-        colors.highlightedColor = baseColor * 1.15f;
-        colors.pressedColor = baseColor * 0.75f;
+        colors.highlightedColor = Color.Lerp(baseColor, Color.white, 0.08f);
+        colors.pressedColor = baseColor * 0.82f;
         colors.disabledColor = new Color(0.16f, 0.16f, 0.16f, 0.6f);
+        colors.colorMultiplier = 1f;
+        colors.fadeDuration = 0.08f;
         button.colors = colors;
 
-        Text text = CreateText("Label", buttonObject.transform, label, 22, new Color(0.95f, 0.92f, 0.82f), TextAnchor.MiddleCenter);
-        StretchToFullScreen(text.rectTransform);
+        AddFrame(buttonObject.transform, new Color(0.78f, 0.58f, 0.42f, 0.5f), 2f, new Vector2(12f, 12f));
+
+        GameObject accent = CreatePanel("Accent", buttonObject.transform, accentColor);
+        SetRect(accent.GetComponent<RectTransform>(), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(16f, 0f), new Vector2(6f, 42f));
+        accent.GetComponent<Image>().raycastTarget = false;
+
+        Text text = CreateText("Label", buttonObject.transform, label, 24, new Color(0.95f, 0.92f, 0.82f), TextAnchor.MiddleLeft);
+        SetRect(text.rectTransform, new Vector2(0f, 0.62f), new Vector2(1f, 0.62f), new Vector2(18f, 0f), new Vector2(-54f, 26f));
+        StyleText(text, FontStyle.Bold, new Color(0.07f, 0.02f, 0.03f, 0.86f));
+
+        Text hintText = CreateText("Hint", buttonObject.transform, sublabel, 12, new Color(0.8f, 0.76f, 0.78f), TextAnchor.MiddleLeft);
+        SetRect(hintText.rectTransform, new Vector2(0f, 0.32f), new Vector2(1f, 0.32f), new Vector2(18f, 0f), new Vector2(-54f, 18f));
+        StyleText(hintText, FontStyle.Normal, new Color(0.04f, 0.01f, 0.02f, 0.76f));
 
         return button;
     }
@@ -364,6 +400,48 @@ public class DemoRunManager : MonoBehaviour
         text.color = color;
 
         return text;
+    }
+
+    private static void CreateDivider(Transform parent, Vector2 anchor, Vector2 size, Color color)
+    {
+        GameObject divider = new GameObject("Divider");
+        divider.transform.SetParent(parent, false);
+        Image image = divider.AddComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+        SetRect(image.rectTransform, anchor, anchor, Vector2.zero, size);
+    }
+
+    private static void AddFrame(Transform parent, Color color, float thickness, Vector2 inset)
+    {
+        CreateEdge(parent, "FrameTop", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -inset.y), new Vector2(-inset.x, thickness), color);
+        CreateEdge(parent, "FrameBottom", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, inset.y), new Vector2(-inset.x, thickness), color);
+        CreateEdge(parent, "FrameLeft", new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(inset.x, 0f), new Vector2(thickness, -inset.y), color);
+        CreateEdge(parent, "FrameRight", new Vector2(1f, 0.5f), new Vector2(1f, 1f), new Vector2(-inset.x, 0f), new Vector2(thickness, -inset.y), color);
+    }
+
+    private static void CreateEdge(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, Color color)
+    {
+        GameObject edge = new GameObject(name);
+        edge.transform.SetParent(parent, false);
+        Image image = edge.AddComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+        SetRect(image.rectTransform, anchorMin, anchorMax, anchoredPosition, sizeDelta);
+    }
+
+    private static void StyleText(Text text, FontStyle fontStyle, Color shadowColor)
+    {
+        text.fontStyle = fontStyle;
+
+        Outline outline = text.GetComponent<Outline>();
+        if (outline == null)
+        {
+            outline = text.gameObject.AddComponent<Outline>();
+        }
+
+        outline.effectColor = shadowColor;
+        outline.effectDistance = new Vector2(1.5f, -1.5f);
     }
 
     private void ShowMenu()

@@ -42,6 +42,10 @@ public class LevelUpUI : MonoBehaviour
     [SerializeField] private Color buttonHighlightColor = new Color(0.38f, 0.19f, 0.2f, 1f);
     [SerializeField] private Color buttonPressedColor = new Color(0.11f, 0.07f, 0.08f, 1f);
     [SerializeField] private float buttonFadeDuration = 0.08f;
+    [SerializeField] private Color frameColor = new Color(0.56f, 0.4f, 0.28f, 0.62f);
+    [SerializeField] private Color headerAccentColor = new Color(0.52f, 0.16f, 0.17f, 0.82f);
+    [SerializeField] private Color subtitleColor = new Color(0.76f, 0.74f, 0.8f, 1f);
+    [SerializeField] private Color tendencyPlateColor = new Color(0.14f, 0.08f, 0.11f, 0.82f);
 
     private PlayerController player;
     private PlayerHealth playerHealth;
@@ -66,16 +70,28 @@ public class LevelUpUI : MonoBehaviour
     public void Show()
     {
         EnsureUpgradeOptionSource();
+        CacheUiReferences();
         EnsureGameplayReferences();
         EnsurePresentation();
         GenerateOffers();
         RefreshOfferViews();
+        if (panel == null)
+        {
+            return;
+        }
+
         panel.SetActive(true);
         Time.timeScale = 0f;
     }
 
     public void Hide()
     {
+        if (panel == null)
+        {
+            Time.timeScale = 1f;
+            return;
+        }
+
         panel.SetActive(false);
         Time.timeScale = 1f;
     }
@@ -147,11 +163,16 @@ public class LevelUpUI : MonoBehaviour
             panelImage.color = panelTint;
         }
 
-        titleLabel = EnsureTextElement("UpgradeTitle", UpgradeTitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -26f), new Vector2(360f, 36f), 28, new Color(0.96f, 0.9f, 0.78f, 1f));
-        subtitleLabel = EnsureTextElement("UpgradeSubtitle", UpgradeSubtitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -58f), new Vector2(440f, 28f), 15, new Color(0.76f, 0.74f, 0.8f, 1f));
+        EnsurePanelChrome();
+
+        titleLabel = EnsureTextElement("UpgradeTitle", UpgradeTitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -28f), new Vector2(400f, 36f), 28, new Color(0.96f, 0.9f, 0.78f, 1f));
+        subtitleLabel = EnsureTextElement("UpgradeSubtitle", UpgradeSubtitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -60f), new Vector2(470f, 28f), 15, subtitleColor);
 
         string tendencyText = corruptionSystem != null ? corruptionSystem.GetAlignmentSummary() : UnknownAlignmentText;
-        tendencyLabel = EnsureTextElement("AlignmentHint", tendencyText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -86f), new Vector2(480f, 24f), 14, new Color(0.86f, 0.82f, 0.84f, 1f));
+        tendencyLabel = EnsureTextElement("AlignmentHint", tendencyText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(450f, 24f), 14, new Color(0.9f, 0.84f, 0.84f, 1f));
+        StyleHeaderText(titleLabel, 0.4f);
+        StyleHeaderText(subtitleLabel, 0.22f);
+        StyleHeaderText(tendencyLabel, 0.2f);
 
         StyleButton(attackButton);
         StyleButton(healButton);
@@ -394,7 +415,10 @@ public class LevelUpUI : MonoBehaviour
             return;
         }
 
-        label.text = offer.data.title + "\n<size=70%>" + offer.data.description + "</size>";
+        string categoryLabel = BuildCategoryLabel(offer.data.category);
+        label.text = "<size=62%><color=#C7AE8C>" + categoryLabel + "</color></size>\n" +
+                     "<size=112%><b>" + offer.data.title + "</b></size>\n" +
+                     "<size=74%>" + offer.data.description + "</size>";
 
         Image image = button.GetComponent<Image>();
         if (image == null)
@@ -407,14 +431,17 @@ public class LevelUpUI : MonoBehaviour
             case UpgradeCategory.Oath:
                 image.color = new Color(0.18f, 0.24f, 0.29f, 1f);
                 label.color = new Color(0.96f, 0.94f, 0.86f, 1f);
+                UpdateButtonChrome(button, new Color(0.63f, 0.69f, 0.76f, 0.8f), new Color(0.22f, 0.31f, 0.39f, 0.55f));
                 break;
             case UpgradeCategory.Corruption:
                 image.color = new Color(0.36f, 0.14f, 0.16f, 1f);
                 label.color = new Color(0.98f, 0.90f, 0.92f, 1f);
+                UpdateButtonChrome(button, new Color(0.77f, 0.43f, 0.37f, 0.85f), new Color(0.34f, 0.1f, 0.14f, 0.62f));
                 break;
             default:
                 image.color = new Color(0.22f, 0.22f, 0.22f, 1f);
                 label.color = new Color(0.92f, 0.92f, 0.92f, 1f);
+                UpdateButtonChrome(button, new Color(0.66f, 0.62f, 0.52f, 0.72f), new Color(0.2f, 0.2f, 0.2f, 0.48f));
                 break;
         }
     }
@@ -545,6 +572,7 @@ public class LevelUpUI : MonoBehaviour
         text.text = content;
         text.fontSize = fontSize;
         text.color = color;
+        text.textWrappingMode = TextWrappingModes.Normal;
         return text;
     }
 
@@ -561,11 +589,204 @@ public class LevelUpUI : MonoBehaviour
             rect.sizeDelta = optionButtonSize;
         }
 
+        EnsureButtonChrome(button);
+
         ColorBlock colors = button.colors;
         colors.highlightedColor = buttonHighlightColor;
         colors.pressedColor = buttonPressedColor;
         colors.selectedColor = colors.highlightedColor;
         colors.fadeDuration = buttonFadeDuration;
         button.colors = colors;
+
+        Navigation navigation = button.navigation;
+        navigation.mode = Navigation.Mode.None;
+        button.navigation = navigation;
+
+        TMP_Text label = FindLabel(button);
+        if (label != null)
+        {
+            label.alignment = TextAlignmentOptions.TopLeft;
+            label.margin = new Vector4(24f, 20f, 20f, 18f);
+            label.textWrappingMode = TextWrappingModes.Normal;
+            label.richText = true;
+            label.lineSpacing = -8f;
+            StyleBodyText(label);
+        }
+    }
+
+    private void EnsurePanelChrome()
+    {
+        EnsureImageElement("TopAccent", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(64f, 6f), headerAccentColor);
+        EnsureImageElement("HeaderDivider", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -116f), new Vector2(430f, 2f), frameColor);
+        EnsureImageElement("AlignmentPlate", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(260f, 24f), tendencyPlateColor);
+
+        EnsureFrameEdge("FrameTop", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -12f), new Vector2(-16f, 2f));
+        EnsureFrameEdge("FrameBottom", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, 12f), new Vector2(-16f, 2f));
+        EnsureFrameEdge("FrameLeft", new Vector2(0f, 0.5f), new Vector2(0f, 1f), new Vector2(12f, 0f), new Vector2(2f, -16f));
+        EnsureFrameEdge("FrameRight", new Vector2(1f, 0.5f), new Vector2(1f, 1f), new Vector2(-12f, 0f), new Vector2(2f, -16f));
+    }
+
+    private void EnsureFrameEdge(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+    {
+        EnsureImageElement(name, anchorMin, anchorMax, anchoredPosition, sizeDelta, frameColor);
+    }
+
+    private Image EnsureImageElement(string objectName, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, Color color)
+    {
+        Transform existing = panel.transform.Find(objectName);
+        Image image;
+
+        if (existing == null)
+        {
+            GameObject imageObject = new GameObject(objectName);
+            imageObject.transform.SetParent(panel.transform, false);
+            RectTransform rect = imageObject.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = sizeDelta;
+            image = imageObject.AddComponent<Image>();
+            image.raycastTarget = false;
+        }
+        else
+        {
+            image = existing.GetComponent<Image>();
+        }
+
+        if (image != null)
+        {
+            image.color = color;
+        }
+
+        return image;
+    }
+
+    private void EnsureButtonChrome(Button button)
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            return;
+        }
+
+        EnsureChildImage(button.transform, "CardShade", new Vector2(0.5f, 0.5f), new Vector2(1f, 1f), Vector2.zero, new Vector2(-8f, -8f), new Color(0f, 0f, 0f, 0.16f));
+        EnsureChildImage(button.transform, "AccentBar", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(12f, 0f), new Vector2(6f, optionButtonSize.y - 22f), headerAccentColor);
+        EnsureChildImage(button.transform, "TopTrim", new Vector2(0.5f, 1f), new Vector2(1f, 1f), new Vector2(0f, -8f), new Vector2(-18f, 2f), frameColor);
+        EnsureChildImage(button.transform, "BottomTrim", new Vector2(0.5f, 0f), new Vector2(1f, 0f), new Vector2(0f, 8f), new Vector2(-18f, 2f), new Color(frameColor.r, frameColor.g, frameColor.b, frameColor.a * 0.7f));
+    }
+
+    private void UpdateButtonChrome(Button button, Color accentColor, Color trimColor)
+    {
+        Transform accent = button.transform.Find("AccentBar");
+        if (accent != null)
+        {
+            Image accentImage = accent.GetComponent<Image>();
+            if (accentImage != null)
+            {
+                accentImage.color = accentColor;
+            }
+        }
+
+        Transform topTrim = button.transform.Find("TopTrim");
+        if (topTrim != null)
+        {
+            Image topImage = topTrim.GetComponent<Image>();
+            if (topImage != null)
+            {
+                topImage.color = trimColor;
+            }
+        }
+
+        Transform bottomTrim = button.transform.Find("BottomTrim");
+        if (bottomTrim != null)
+        {
+            Image bottomImage = bottomTrim.GetComponent<Image>();
+            if (bottomImage != null)
+            {
+                bottomImage.color = trimColor;
+            }
+        }
+    }
+
+    private static Image EnsureChildImage(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, Color color)
+    {
+        Transform existing = parent.Find(name);
+        Image image;
+
+        if (existing == null)
+        {
+            GameObject imageObject = new GameObject(name);
+            imageObject.transform.SetParent(parent, false);
+            RectTransform rect = imageObject.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = sizeDelta;
+            image = imageObject.AddComponent<Image>();
+            image.raycastTarget = false;
+        }
+        else
+        {
+            image = existing.GetComponent<Image>();
+        }
+
+        if (image != null)
+        {
+            image.color = color;
+        }
+
+        return image;
+    }
+
+    private static void StyleHeaderText(TMP_Text text, float underlayAlpha)
+    {
+        if (text == null)
+        {
+            return;
+        }
+
+        text.fontStyle = FontStyles.Bold;
+        text.outlineWidth = 0.18f;
+        text.outlineColor = new Color(0.09f, 0.02f, 0.03f, 0.82f);
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.fontMaterial.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+        text.fontMaterial.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0.05f, 0.01f, 0.02f, underlayAlpha));
+        text.fontMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 1f);
+        text.fontMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -1f);
+    }
+
+    private static void StyleBodyText(TMP_Text text)
+    {
+        if (text == null)
+        {
+            return;
+        }
+
+        text.outlineWidth = 0.16f;
+        text.outlineColor = new Color(0.08f, 0.02f, 0.03f, 0.82f);
+        text.fontMaterial.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+        text.fontMaterial.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0.04f, 0.01f, 0.02f, 0.6f));
+        text.fontMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 1f);
+        text.fontMaterial.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, -1f);
+    }
+
+    private static string BuildCategoryLabel(UpgradeCategory category)
+    {
+        switch (category)
+        {
+            case UpgradeCategory.Oath:
+                return "OATH PATH";
+            case UpgradeCategory.Corruption:
+                return "FALLEN PATH";
+            default:
+                return "COMMON RITE";
+        }
     }
 }

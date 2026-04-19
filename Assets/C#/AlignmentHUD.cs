@@ -6,9 +6,9 @@ public class AlignmentHUD : MonoBehaviour
     public CorruptionSystem corruptionSystem;
 
     [Header("Layout")]
-    [SerializeField] private Vector2 panelAnchorPosition = new Vector2(22f, -18f);
-    [SerializeField] private Vector2 panelSize = new Vector2(248f, 126f);
-    [SerializeField] private Vector2 barSize = new Vector2(116f, 10f);
+    [SerializeField] private Vector2 panelAnchorPosition = new Vector2(20f, -72f);
+    [SerializeField] private Vector2 panelSize = new Vector2(304f, 164f);
+    [SerializeField] private Vector2 barSize = new Vector2(144f, 14f);
 
     [Header("Colors")]
     [SerializeField] private Color panelColor = new Color(0.06f, 0.055f, 0.07f, 0.88f);
@@ -70,7 +70,9 @@ public class AlignmentHUD : MonoBehaviour
 
         CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1280f, 720f);
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.6f;
 
         canvasObject.AddComponent<GraphicRaycaster>();
 
@@ -83,15 +85,15 @@ public class AlignmentHUD : MonoBehaviour
         panelRect.sizeDelta = panelSize;
 
         CreateFrame(panelObject.transform);
-        CreateSectionLine(panelObject.transform, new Vector2(12f, -28f), new Vector2(panelSize.x - 24f, 1f));
-        CreateSectionLine(panelObject.transform, new Vector2(12f, -86f), new Vector2(panelSize.x - 24f, 1f));
+        CreateSectionLine(panelObject.transform, new Vector2(14f, -34f), new Vector2(panelSize.x - 28f, 1f));
+        CreateSectionLine(panelObject.transform, new Vector2(14f, -112f), new Vector2(panelSize.x - 28f, 1f));
 
-        CreateText("Header", panelObject.transform, "BROKEN VOW", 13, titleColor, TextAnchor.UpperLeft, new Vector2(14f, -8f), new Vector2(140f, 18f), FontStyle.Bold);
+        CreateText("Header", panelObject.transform, "BROKEN VOW", 15, titleColor, TextAnchor.UpperLeft, new Vector2(16f, -10f), new Vector2(180f, 22f), FontStyle.Bold);
 
         CreateBarBlock(
             panelObject.transform,
             "Oath",
-            new Vector2(14f, -38f),
+            new Vector2(16f, -48f),
             oathColor,
             out oathValueText,
             out oathFillImage);
@@ -99,25 +101,25 @@ public class AlignmentHUD : MonoBehaviour
         CreateBarBlock(
             panelObject.transform,
             "Corruption",
-            new Vector2(14f, -64f),
+            new Vector2(16f, -82f),
             corruptionColor,
             out corruptionValueText,
             out corruptionFillImage);
 
-        CreateText("BiasLabel", panelObject.transform, "Bias", 12, labelColor, TextAnchor.UpperLeft, new Vector2(14f, -95f), new Vector2(52f, 18f), FontStyle.Normal);
-        biasValueText = CreateText("BiasValue", panelObject.transform, "Balanced", 16, neutralBiasColor, TextAnchor.MiddleLeft, new Vector2(14f, -108f), new Vector2(170f, 24f), FontStyle.Bold);
+        CreateText("BiasLabel", panelObject.transform, "CURRENT TENDENCY", 11, labelColor, TextAnchor.UpperLeft, new Vector2(16f, -122f), new Vector2(130f, 18f), FontStyle.Normal);
+        biasValueText = CreateText("BiasValue", panelObject.transform, "Balanced", 20, neutralBiasColor, TextAnchor.MiddleLeft, new Vector2(16f, -142f), new Vector2(196f, 28f), FontStyle.Bold);
 
         GameObject accentObject = CreateImageObject("BiasAccent", panelObject.transform, neutralBiasColor);
         RectTransform accentRect = accentObject.GetComponent<RectTransform>();
         accentRect.anchorMin = new Vector2(0f, 1f);
         accentRect.anchorMax = new Vector2(0f, 1f);
         accentRect.pivot = new Vector2(0f, 1f);
-        accentRect.anchoredPosition = new Vector2(panelSize.x - 54f, -102f);
-        accentRect.sizeDelta = new Vector2(28f, 28f);
+        accentRect.anchoredPosition = new Vector2(panelSize.x - 68f, -132f);
+        accentRect.sizeDelta = new Vector2(42f, 24f);
         biasAccentImage = accentObject.GetComponent<Image>();
 
         GameObject accentCore = CreateImageObject("BiasAccentCore", accentObject.transform, panelColor * new Color(1.2f, 1.2f, 1.2f, 1f));
-        StretchRect(accentCore.GetComponent<RectTransform>(), new Vector2(4f, 4f));
+        StretchRect(accentCore.GetComponent<RectTransform>(), new Vector2(5f, 5f));
     }
 
     private void RefreshDisplay()
@@ -166,16 +168,20 @@ public class AlignmentHUD : MonoBehaviour
 
     private void CreateBarBlock(Transform parent, string label, Vector2 anchoredPosition, Color fillColor, out Text valueText, out Image fillImage)
     {
-        CreateText(label + "Label", parent, label, 12, labelColor, TextAnchor.UpperLeft, anchoredPosition, new Vector2(84f, 18f), FontStyle.Normal);
-        valueText = CreateText(label + "Value", parent, "0", 14, fillColor, TextAnchor.UpperRight, anchoredPosition, new Vector2(200f, 18f), FontStyle.Bold);
+        CreateText(label + "Label", parent, label.ToUpperInvariant(), 11, labelColor, TextAnchor.UpperLeft, anchoredPosition, new Vector2(94f, 18f), FontStyle.Normal);
+        valueText = CreateText(label + "Value", parent, "0", 17, fillColor, TextAnchor.UpperRight, anchoredPosition + new Vector2(0f, -1f), new Vector2(250f, 20f), FontStyle.Bold);
 
         GameObject barBackground = CreateImageObject(label + "BarBG", parent, new Color(0.12f, 0.1f, 0.1f, 0.95f));
         RectTransform backgroundRect = barBackground.GetComponent<RectTransform>();
         backgroundRect.anchorMin = new Vector2(0f, 1f);
         backgroundRect.anchorMax = new Vector2(0f, 1f);
         backgroundRect.pivot = new Vector2(0f, 1f);
-        backgroundRect.anchoredPosition = anchoredPosition + new Vector2(94f, -2f);
+        backgroundRect.anchoredPosition = anchoredPosition + new Vector2(118f, -1f);
         backgroundRect.sizeDelta = barSize;
+
+        Outline backgroundOutline = barBackground.AddComponent<Outline>();
+        backgroundOutline.effectColor = new Color(0.05f, 0.02f, 0.02f, 0.8f);
+        backgroundOutline.effectDistance = new Vector2(1f, -1f);
 
         GameObject barFill = CreateImageObject(label + "BarFill", barBackground.transform, fillColor);
         RectTransform fillRect = barFill.GetComponent<RectTransform>();

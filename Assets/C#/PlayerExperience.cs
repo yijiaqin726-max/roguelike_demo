@@ -20,7 +20,6 @@ public class PlayerExperience : MonoBehaviour
     public void GainExp(int amount)
     {
         currentExp += amount;
-        Debug.Log("Current EXP: " + currentExp + "/" + expToNextLevel);
 
         if (currentExp >= expToNextLevel)
         {
