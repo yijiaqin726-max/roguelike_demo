@@ -267,7 +267,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Oath: Steady Stride'
+  m_text: 'Skill Slot A'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -404,7 +404,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Break Oath: Ashen Flurry'
+  m_text: 'Skill Slot B'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -703,7 +703,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 80}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 220, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &399569848
 MonoBehaviour:
@@ -836,7 +836,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 220, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &448837963
 MonoBehaviour:
@@ -1210,6 +1210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 753601273}
   - component: {fileID: 753601274}
+  - component: {fileID: 753601275}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -1245,6 +1246,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelUpUI
   panel: {fileID: 282610181}
+  attackButton: {fileID: 448837963}
+  healButton: {fileID: 399569848}
+  speedButton: {fileID: 762168582}
+--- !u!114 &753601275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753601272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c943f6c129945109e5d87dc13cf64d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FloorFlowManager
+  groundRenderer: {fileID: 420000003}
+  enemySpawner: {fileID: 554705382}
+  playerTransform: {fileID: 981142651}
+  floorBackgrounds:
+  - {fileID: 6001001001001001001, guid: 6ee8ec75d8c94fe0a3e2737a0a8bde11, type: 3}
+  - {fileID: 6001001001001001002, guid: 2454dd8a70484aef8211dbf33ca1bfca, type: 3}
+  - {fileID: 6001001001001001003, guid: 9443cb5ccb37445fbd2a263665307f9e, type: 3}
+  floorDuration: 40
+  exitDistance: 3.5
+  playerSpawnPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &762168580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1282,7 +1308,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -80}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 220, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &762168582
 MonoBehaviour:
@@ -1810,7 +1836,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Oath: Purify'
+  m_text: 'Skill Slot C'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -154,6 +154,12 @@ public class DemoRunManager : MonoBehaviour
         }
 
         ApplyPendingLoadIfNeeded();
+
+        FloorFlowManager floorFlowManager = FindObjectOfType<FloorFlowManager>();
+        if (floorFlowManager != null)
+        {
+            floorFlowManager.BeginFloor();
+        }
     }
 
     private void ApplyPendingLoadIfNeeded()
@@ -201,6 +207,12 @@ public class DemoRunManager : MonoBehaviour
         pendingLoadData = null;
         Time.timeScale = 1f;
         UpdateFloorLabel();
+
+        FloorFlowManager floorFlowManager = FindObjectOfType<FloorFlowManager>();
+        if (floorFlowManager != null)
+        {
+            floorFlowManager.BeginFloor();
+        }
     }
 
     private GameSaveData CollectCurrentData()
@@ -268,7 +280,7 @@ public class DemoRunManager : MonoBehaviour
         Text titleText = CreateText(
             "Title",
             overlay.transform,
-            "Oathbreaker Paladin",
+            "破誓圣骑士",
             38,
             new Color(0.95f, 0.92f, 0.82f),
             TextAnchor.MiddleCenter
@@ -278,26 +290,26 @@ public class DemoRunManager : MonoBehaviour
         Text subtitleText = CreateText(
             "Subtitle",
             overlay.transform,
-            "Climb deeper while choosing between oath and corruption",
+            "在守誓与腐化之间抉择，继续深入地牢",
             18,
             new Color(0.79f, 0.83f, 0.88f),
             TextAnchor.MiddleCenter
         );
         SetRect(subtitleText.rectTransform, new Vector2(0.5f, 0.61f), new Vector2(0.5f, 0.61f), Vector2.zero, new Vector2(620f, 40f));
 
-        Button startButton = CreateButton("StartButton", overlay.transform, "Start Game", new Vector2(0.5f, 0.47f));
+        Button startButton = CreateButton("StartButton", overlay.transform, "开始冒险", new Vector2(0.5f, 0.47f));
         startButton.onClick.AddListener(StartNewRun);
 
-        continueButton = CreateButton("ContinueButton", overlay.transform, "Continue", new Vector2(0.5f, 0.37f));
+        continueButton = CreateButton("ContinueButton", overlay.transform, "继续征途", new Vector2(0.5f, 0.37f));
         continueButton.onClick.AddListener(ContinueRun);
 
-        Button quitButton = CreateButton("QuitButton", overlay.transform, "Quit", new Vector2(0.5f, 0.27f));
+        Button quitButton = CreateButton("QuitButton", overlay.transform, "退出游戏", new Vector2(0.5f, 0.27f));
         quitButton.onClick.AddListener(QuitGame);
 
         floorLabel = CreateText(
             "FloorLabel",
             canvasObject.transform,
-            "Floor 1",
+            "第 1 层",
             20,
             new Color(0.92f, 0.94f, 0.96f),
             TextAnchor.MiddleRight
@@ -315,7 +327,7 @@ public class DemoRunManager : MonoBehaviour
             return;
         }
 
-        uiFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        uiFont = LoadPreferredFont();
         BuildMenuCanvas();
     }
 
@@ -399,8 +411,28 @@ public class DemoRunManager : MonoBehaviour
             return;
         }
 
-        floorLabel.text = "Floor " + Mathf.Max(1, CurrentFloor);
+        floorLabel.text = "第 " + Mathf.Max(1, CurrentFloor) + " 层";
         floorLabel.gameObject.SetActive(HasActiveRun);
+    }
+
+    private static Font LoadPreferredFont()
+    {
+        string[] preferredFonts =
+        {
+            "Microsoft YaHei",
+            "SimHei",
+            "SimSun",
+            "Arial Unicode MS",
+            "Arial"
+        };
+
+        Font dynamicFont = Font.CreateDynamicFontFromOSFont(preferredFonts, 24);
+        if (dynamicFont != null)
+        {
+            return dynamicFont;
+        }
+
+        return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 
     private void QuitGame()
