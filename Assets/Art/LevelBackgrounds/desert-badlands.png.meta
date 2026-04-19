@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: edfd09978313ebf488c42420d3218a6b
+guid: 8d306da628b0285478026d363dde72f8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2413806693520163455
-    second: corruption-orb-pickup_0
+      213: -999147412054525285
+    second: desert-badlands_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: corruption-orb-pickup_0
+      name: desert-badlands_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 48
-        height: 48
+        width: 1024
+        height: 1024
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 22222222222222220800000000000000
-      internalID: -2413806693520163455
+      spriteID: b9a3d32f8b05222f0800000000000000
+      internalID: -999147412054525285
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      corruption-orb-pickup_0: -2413806693520163455
+      desert-badlands_0: -999147412054525285
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
