@@ -1,65 +1,75 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemyFollow : MonoBehaviour
 {
+    [FormerlySerializedAs("speed")]
+    public float moveSpeed = 2f;
+    [FormerlySerializedAs("damageInterval")]
+    public float contactDamageInterval = 1f;
+
+    [SerializeField] private int contactDamage = 1;
+    [SerializeField] private string playerTag = "Player";
+
     private Transform player;
-    public float speed = 2f;
+    private bool isTouchingPlayer;
+    private float damageTimer;
 
-    private bool isTouchingPlayer = false;
-    private float damageTimer = 0f;
-    public float damageInterval = 1f; // 每1秒扣一次血
-
-    void Start()
+    private void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
+        GameObject playerObject = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObject != null)
         {
-            player = playerObj.transform;
+            player = playerObject.transform;
         }
     }
 
-    void Update()
+    private void Update()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
 
-        // 跟随玩家
         Vector3 direction = player.position - transform.position;
-        transform.position += direction.normalized * speed * Time.deltaTime;
+        transform.position += direction.normalized * moveSpeed * Time.deltaTime;
 
-        // 如果贴着玩家，就持续扣血
-        if (isTouchingPlayer)
+        if (!isTouchingPlayer)
         {
-            damageTimer += Time.deltaTime;
+            return;
+        }
 
-            if (damageTimer >= damageInterval)
-            {
-                DealDamage();
-                damageTimer = 0f;
-            }
+        damageTimer += Time.deltaTime;
+        if (damageTimer >= contactDamageInterval)
+        {
+            DealDamage();
+            damageTimer = 0f;
         }
     }
 
-    void DealDamage()
+    private void DealDamage()
     {
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(1);
+            playerHealth.TakeDamage(contactDamage);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (!other.CompareTag(playerTag))
         {
-            isTouchingPlayer = true;
-            damageTimer = 0f; // 刚碰到就重新计时
+            return;
         }
+
+        isTouchingPlayer = true;
+        damageTimer = 0f;
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(playerTag))
         {
             isTouchingPlayer = false;
         }

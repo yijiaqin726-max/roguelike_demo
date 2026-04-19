@@ -12,4 +12,6 @@ public class GameSaveData
     public int maxHealth = 10;
     public int currentHealth = 10;
     public int currentCorruption = 0;
+    public int corruptionValue = 0;
+    public int oathValue = 0;
 }

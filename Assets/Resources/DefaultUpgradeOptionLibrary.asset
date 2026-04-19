@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2c22e31f153434baa5439472256f9cf, type: 3}
+  m_Name: DefaultUpgradeOptionLibrary
+  m_EditorClassIdentifier: 
+  options:
+  - title: OATH: Sacred Guard
+    description: After taking damage, gain brief damage reduction.
+    category: 0
+    effectType: 6
+    oathChange: 12
+    corruptionChange: 0
+    baseWeight: 1
+    oathAffinity: 0.35
+    corruptionAffinity: -0.1
+  - title: OATH: Mercy Tithe
+    description: Picking up EXP restores a small amount of health.
+    category: 0
+    effectType: 7
+    oathChange: 10
+    corruptionChange: -4
+    baseWeight: 1
+    oathAffinity: 0.3
+    corruptionAffinity: -0.2
+  - title: OATH: Purging Pulse
+    description: Periodically emit a holy shockwave around you.
+    category: 0
+    effectType: 8
+    oathChange: 14
+    corruptionChange: -6
+    baseWeight: 0.9
+    oathAffinity: 0.45
+    corruptionAffinity: -0.05
+  - title: FALL: Blood Appetite
+    description: Kills have a chance to restore health.
+    category: 1
+    effectType: 9
+    oathChange: 0
+    corruptionChange: 15
+    baseWeight: 1
+    oathAffinity: -0.15
+    corruptionAffinity: 0.35
+  - title: FALL: Last Breath Fury
+    description: Attack faster as your health gets lower.
+    category: 1
+    effectType: 10
+    oathChange: 0
+    corruptionChange: 16
+    baseWeight: 1
+    oathAffinity: -0.15
+    corruptionAffinity: 0.35
+  - title: FALL: Rotburst
+    description: Enemies explode with corruption when they die.
+    category: 1
+    effectType: 11
+    oathChange: 0
+    corruptionChange: 22
+    baseWeight: 0.9
+    oathAffinity: -0.2
+    corruptionAffinity: 0.45
+  - title: COMMON: Field Recovery
+    description: Recover slightly without shifting too hard.
+    category: 2
+    effectType: 2
+    oathChange: 0
+    corruptionChange: 0
+    baseWeight: 1
+    oathAffinity: 0
+    corruptionAffinity: 0
+  - title: COMMON: Tempered Stride
+    description: Reliable movement for any build.
+    category: 2
+    effectType: 1
+    oathChange: 0
+    corruptionChange: 0
+    baseWeight: 1
+    oathAffinity: 0
+    corruptionAffinity: 0
+  - title: COMMON: Battle Rhythm
+    description: Improve attack speed without shifting alignment.
+    category: 2
+    effectType: 0
+    oathChange: 0
+    corruptionChange: 0
+    baseWeight: 0.9
+    oathAffinity: 0
+    corruptionAffinity: 0

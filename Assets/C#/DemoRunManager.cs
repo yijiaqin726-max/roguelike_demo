@@ -6,6 +6,12 @@ using UnityEngine.UI;
 public class DemoRunManager : MonoBehaviour
 {
     private const string GameplaySceneName = "SampleScene";
+    private const string MenuTitleText = "\u7834\u8a93\u5723\u9a91\u58eb";
+    private const string MenuMottoText = "\u8a93\u7ea6\u5df2\u788e\uff0c\u8363\u5149\u5df2\u7a7a\uff0c\u5723\u5149\u6b63\u5728\u5760\u843d";
+    private const string MenuSubtitleText = "\u5728\u5b88\u8a93\u4e0e\u8150\u5316\u4e4b\u95f4\u6295\u62e9\uff0c\u7ee7\u7eed\u6df1\u5165\u5730\u7262";
+    private const string StartRunText = "\u5f00\u59cb\u5f81\u9014";
+    private const string ContinueRunText = "\u7ee7\u7eed\u5f81\u9014";
+    private const string QuitText = "\u9000\u51fa\u6e38\u620f";
 
     public static DemoRunManager Instance { get; private set; }
 
@@ -178,8 +184,8 @@ public class DemoRunManager : MonoBehaviour
 
         if (playerController != null)
         {
-            playerController.speed = pendingLoadData.moveSpeed;
-            playerController.attackInterval = pendingLoadData.attackInterval;
+            playerController.moveSpeed = pendingLoadData.moveSpeed;
+            playerController.attackIntervalSeconds = pendingLoadData.attackInterval;
         }
 
         if (playerExperience != null)
@@ -197,11 +203,9 @@ public class DemoRunManager : MonoBehaviour
 
         if (corruptionSystem != null)
         {
-            corruptionSystem.currentCorruption = Mathf.Clamp(
-                pendingLoadData.currentCorruption,
-                0,
-                corruptionSystem.maxCorruption
-            );
+            int loadedCorruption = Mathf.Max(pendingLoadData.corruptionValue, pendingLoadData.currentCorruption);
+            corruptionSystem.corruptionValue = Mathf.Clamp(loadedCorruption, 0, corruptionSystem.maxCorruption);
+            corruptionSystem.oathValue = Mathf.Clamp(pendingLoadData.oathValue, 0, corruptionSystem.maxOath);
         }
 
         pendingLoadData = null;
@@ -229,8 +233,8 @@ public class DemoRunManager : MonoBehaviour
 
         if (playerController != null)
         {
-            data.moveSpeed = playerController.speed;
-            data.attackInterval = playerController.attackInterval;
+            data.moveSpeed = playerController.moveSpeed;
+            data.attackInterval = playerController.attackIntervalSeconds;
         }
 
         if (playerExperience != null)
@@ -248,7 +252,9 @@ public class DemoRunManager : MonoBehaviour
 
         if (corruptionSystem != null)
         {
-            data.currentCorruption = corruptionSystem.currentCorruption;
+            data.currentCorruption = corruptionSystem.corruptionValue;
+            data.corruptionValue = corruptionSystem.corruptionValue;
+            data.oathValue = corruptionSystem.oathValue;
         }
 
         return data;
@@ -277,43 +283,28 @@ public class DemoRunManager : MonoBehaviour
         GameObject overlay = CreatePanel("Overlay", canvasObject.transform, new Color(0.04f, 0.06f, 0.09f, 0.92f));
         StretchToFullScreen(overlay.GetComponent<RectTransform>());
 
-        Text titleText = CreateText(
-            "Title",
-            overlay.transform,
-            "破誓圣骑士",
-            38,
-            new Color(0.95f, 0.92f, 0.82f),
-            TextAnchor.MiddleCenter
-        );
-        SetRect(titleText.rectTransform, new Vector2(0.5f, 0.68f), new Vector2(0.5f, 0.68f), Vector2.zero, new Vector2(420f, 60f));
+        GameObject centerPlate = CreatePanel("CenterPlate", overlay.transform, new Color(0.06f, 0.04f, 0.06f, 0.78f));
+        SetRect(centerPlate.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -8f), new Vector2(620f, 360f));
 
-        Text subtitleText = CreateText(
-            "Subtitle",
-            overlay.transform,
-            "在守誓与腐化之间抉择，继续深入地牢",
-            18,
-            new Color(0.79f, 0.83f, 0.88f),
-            TextAnchor.MiddleCenter
-        );
-        SetRect(subtitleText.rectTransform, new Vector2(0.5f, 0.61f), new Vector2(0.5f, 0.61f), Vector2.zero, new Vector2(620f, 40f));
+        Text titleText = CreateText("Title", centerPlate.transform, MenuTitleText, 42, new Color(0.96f, 0.9f, 0.78f), TextAnchor.MiddleCenter);
+        SetRect(titleText.rectTransform, new Vector2(0.5f, 0.74f), new Vector2(0.5f, 0.74f), Vector2.zero, new Vector2(420f, 60f));
 
-        Button startButton = CreateButton("StartButton", overlay.transform, "开始冒险", new Vector2(0.5f, 0.47f));
+        Text mottoText = CreateText("Motto", centerPlate.transform, MenuMottoText, 14, new Color(0.74f, 0.56f, 0.56f), TextAnchor.MiddleCenter);
+        SetRect(mottoText.rectTransform, new Vector2(0.5f, 0.64f), new Vector2(0.5f, 0.64f), Vector2.zero, new Vector2(500f, 24f));
+
+        Text subtitleText = CreateText("Subtitle", centerPlate.transform, MenuSubtitleText, 18, new Color(0.79f, 0.76f, 0.82f), TextAnchor.MiddleCenter);
+        SetRect(subtitleText.rectTransform, new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), Vector2.zero, new Vector2(620f, 40f));
+
+        Button startButton = CreateButton("StartButton", centerPlate.transform, StartRunText, new Vector2(0.5f, 0.39f), new Color(0.32f, 0.12f, 0.13f, 0.96f));
         startButton.onClick.AddListener(StartNewRun);
 
-        continueButton = CreateButton("ContinueButton", overlay.transform, "继续征途", new Vector2(0.5f, 0.37f));
+        continueButton = CreateButton("ContinueButton", centerPlate.transform, ContinueRunText, new Vector2(0.5f, 0.27f), new Color(0.16f, 0.18f, 0.24f, 0.96f));
         continueButton.onClick.AddListener(ContinueRun);
 
-        Button quitButton = CreateButton("QuitButton", overlay.transform, "退出游戏", new Vector2(0.5f, 0.27f));
+        Button quitButton = CreateButton("QuitButton", centerPlate.transform, QuitText, new Vector2(0.5f, 0.15f), new Color(0.12f, 0.12f, 0.14f, 0.92f));
         quitButton.onClick.AddListener(QuitGame);
 
-        floorLabel = CreateText(
-            "FloorLabel",
-            canvasObject.transform,
-            "第 1 层",
-            20,
-            new Color(0.92f, 0.94f, 0.96f),
-            TextAnchor.MiddleRight
-        );
+        floorLabel = CreateText("FloorLabel", canvasObject.transform, BuildFloorLabelText(1), 20, new Color(0.92f, 0.94f, 0.96f), TextAnchor.MiddleRight);
         SetRect(floorLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(180f, 30f));
 
         RefreshContinueButtonState();
@@ -340,17 +331,17 @@ public class DemoRunManager : MonoBehaviour
         return panel;
     }
 
-    private Button CreateButton(string name, Transform parent, string label, Vector2 anchor)
+    private Button CreateButton(string name, Transform parent, string label, Vector2 anchor, Color baseColor)
     {
-        GameObject buttonObject = CreatePanel(name, parent, new Color(0.18f, 0.21f, 0.27f, 0.94f));
+        GameObject buttonObject = CreatePanel(name, parent, baseColor);
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
-        SetRect(rect, anchor, anchor, Vector2.zero, new Vector2(220f, 52f));
+        SetRect(rect, anchor, anchor, Vector2.zero, new Vector2(250f, 56f));
 
         Button button = buttonObject.AddComponent<Button>();
         ColorBlock colors = button.colors;
-        colors.normalColor = new Color(0.18f, 0.21f, 0.27f, 0.94f);
-        colors.highlightedColor = new Color(0.28f, 0.32f, 0.4f, 1f);
-        colors.pressedColor = new Color(0.1f, 0.13f, 0.18f, 1f);
+        colors.normalColor = baseColor;
+        colors.highlightedColor = baseColor * 1.15f;
+        colors.pressedColor = baseColor * 0.75f;
         colors.disabledColor = new Color(0.16f, 0.16f, 0.16f, 0.6f);
         button.colors = colors;
 
@@ -411,8 +402,13 @@ public class DemoRunManager : MonoBehaviour
             return;
         }
 
-        floorLabel.text = "第 " + Mathf.Max(1, CurrentFloor) + " 层";
+        floorLabel.text = BuildFloorLabelText(CurrentFloor);
         floorLabel.gameObject.SetActive(HasActiveRun);
+    }
+
+    private static string BuildFloorLabelText(int floor)
+    {
+        return "\u7b2c " + Mathf.Max(1, floor) + " \u5c42";
     }
 
     private static Font LoadPreferredFont()

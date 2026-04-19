@@ -1,27 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FloorFlowManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class WaveStage
+    {
+        public string displayName = "Ashen Approach";
+        [Range(0f, 1f)]
+        public float startTimeNormalized;
+        public float spawnInterval = 2f;
+        public int batchCount = 1;
+        public float healthMultiplier = 1f;
+        public float speedMultiplier = 1f;
+        public float scaleMultiplier = 1f;
+        [Range(0f, 1f)]
+        public float eliteChance;
+        public Color enemyTint = Color.white;
+        public Color eliteTint = new Color(0.78f, 0.26f, 0.3f, 1f);
+        public string corruptionMessage = "";
+        public int corruptionIncrease;
+    }
+
     public SpriteRenderer groundRenderer;
     public EnemySpawner enemySpawner;
     public Transform playerTransform;
     public Sprite[] floorBackgrounds;
-    public float floorDuration = 40f;
+    public float floorDuration = 150f;
     public float exitDistance = 3.5f;
     public Vector3 playerSpawnPosition = Vector3.zero;
+    public List<WaveStage> waveStages = new List<WaveStage>();
 
     private float remainingTime;
+    private float elapsedTime;
     private bool exitSpawned;
     private FloorExitPortal activePortal;
     private Canvas hudCanvas;
     private Text timerLabel;
+    private Text waveLabel;
+    private Text eventLabel;
     private Font uiFont;
     private Sprite cachedWhiteSprite;
+    private int currentWaveIndex = -1;
+    private Coroutine eventRoutine;
+    private CorruptionSystem corruptionSystem;
 
     private void Start()
     {
         EnsureReferences();
+        EnsureDefaultWaveStages();
         BuildHudIfNeeded();
         BeginFloor();
     }
@@ -33,7 +62,9 @@ public class FloorFlowManager : MonoBehaviour
             return;
         }
 
-        remainingTime = Mathf.Max(0f, remainingTime - Time.deltaTime);
+        elapsedTime += Time.deltaTime;
+        remainingTime = Mathf.Max(0f, floorDuration - elapsedTime);
+        UpdateWaveStage();
         UpdateTimerLabel();
 
         if (remainingTime <= 0f)
@@ -45,18 +76,22 @@ public class FloorFlowManager : MonoBehaviour
     public void BeginFloor()
     {
         EnsureReferences();
+        EnsureDefaultWaveStages();
         RemovePortal();
         ApplyFloorBackground();
         ClearFloorActors();
         ResetPlayerPosition();
         remainingTime = floorDuration;
+        elapsedTime = 0f;
         exitSpawned = false;
+        currentWaveIndex = -1;
 
         if (enemySpawner != null)
         {
             enemySpawner.SetSpawnEnabled(true);
         }
 
+        UpdateWaveStage();
         UpdateTimerLabel();
     }
 
@@ -94,6 +129,81 @@ public class FloorFlowManager : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
+
+        if (corruptionSystem == null)
+        {
+            corruptionSystem = FindObjectOfType<CorruptionSystem>();
+        }
+    }
+
+    private void EnsureDefaultWaveStages()
+    {
+        if (waveStages != null && waveStages.Count > 0)
+        {
+            return;
+        }
+
+        waveStages = new List<WaveStage>
+        {
+            new WaveStage
+            {
+                displayName = "Ashen Approach",
+                startTimeNormalized = 0f,
+                spawnInterval = 2.15f,
+                batchCount = 1,
+                healthMultiplier = 0.9f,
+                speedMultiplier = 0.92f,
+                scaleMultiplier = 0.95f,
+                eliteChance = 0f,
+                enemyTint = new Color(0.84f, 0.84f, 0.84f, 1f),
+                corruptionMessage = "Corruption is faint. The enemy line is still probing."
+            },
+            new WaveStage
+            {
+                displayName = "Corruption Rising",
+                startTimeNormalized = 0.28f,
+                spawnInterval = 1.65f,
+                batchCount = 1,
+                healthMultiplier = 1.1f,
+                speedMultiplier = 1.08f,
+                scaleMultiplier = 1f,
+                eliteChance = 0.08f,
+                enemyTint = new Color(0.76f, 0.86f, 0.76f, 1f),
+                eliteTint = new Color(0.68f, 0.24f, 0.26f, 1f),
+                corruptionMessage = "Corruption deepens. The horde grows more restless.",
+                corruptionIncrease = 8
+            },
+            new WaveStage
+            {
+                displayName = "Fractured Vows",
+                startTimeNormalized = 0.58f,
+                spawnInterval = 1.2f,
+                batchCount = 2,
+                healthMultiplier = 1.35f,
+                speedMultiplier = 1.16f,
+                scaleMultiplier = 1.08f,
+                eliteChance = 0.18f,
+                enemyTint = new Color(0.84f, 0.72f, 0.72f, 1f),
+                eliteTint = new Color(0.8f, 0.22f, 0.28f, 1f),
+                corruptionMessage = "The vow fractures spread. The battlefield slips from control.",
+                corruptionIncrease = 12
+            },
+            new WaveStage
+            {
+                displayName = "Abyss Pressure",
+                startTimeNormalized = 0.82f,
+                spawnInterval = 0.82f,
+                batchCount = 2,
+                healthMultiplier = 1.7f,
+                speedMultiplier = 1.3f,
+                scaleMultiplier = 1.14f,
+                eliteChance = 0.35f,
+                enemyTint = new Color(0.92f, 0.78f, 0.78f, 1f),
+                eliteTint = new Color(0.92f, 0.18f, 0.24f, 1f),
+                corruptionMessage = "The abyss presses in. Elite enemies are now emerging.",
+                corruptionIncrease = 18
+            }
+        };
     }
 
     private void ApplyFloorBackground()
@@ -124,6 +234,8 @@ public class FloorFlowManager : MonoBehaviour
         {
             enemySpawner.SetSpawnEnabled(false);
         }
+
+        ShowEventMessage("The gate to the next floor has opened.");
 
         Vector3 portalPosition = playerSpawnPosition + Vector3.up * exitDistance;
         if (playerTransform != null)
@@ -243,6 +355,37 @@ public class FloorFlowManager : MonoBehaviour
         rect.pivot = new Vector2(0.5f, 1f);
         rect.anchoredPosition = new Vector2(0f, -22f);
         rect.sizeDelta = new Vector2(420f, 36f);
+
+        GameObject waveObject = new GameObject("WaveLabel");
+        waveObject.transform.SetParent(canvasObject.transform, false);
+        waveLabel = waveObject.AddComponent<Text>();
+        waveLabel.font = uiFont;
+        waveLabel.fontSize = 18;
+        waveLabel.alignment = TextAnchor.UpperCenter;
+        waveLabel.color = new Color(0.82f, 0.88f, 0.96f, 0.96f);
+
+        RectTransform waveRect = waveObject.GetComponent<RectTransform>();
+        waveRect.anchorMin = new Vector2(0.5f, 1f);
+        waveRect.anchorMax = new Vector2(0.5f, 1f);
+        waveRect.pivot = new Vector2(0.5f, 1f);
+        waveRect.anchoredPosition = new Vector2(0f, -54f);
+        waveRect.sizeDelta = new Vector2(460f, 30f);
+
+        GameObject eventObject = new GameObject("CorruptionEventLabel");
+        eventObject.transform.SetParent(canvasObject.transform, false);
+        eventLabel = eventObject.AddComponent<Text>();
+        eventLabel.font = uiFont;
+        eventLabel.fontSize = 22;
+        eventLabel.alignment = TextAnchor.UpperCenter;
+        eventLabel.color = new Color(0.95f, 0.86f, 0.88f, 0f);
+        eventLabel.text = string.Empty;
+
+        RectTransform eventRect = eventObject.GetComponent<RectTransform>();
+        eventRect.anchorMin = new Vector2(0.5f, 1f);
+        eventRect.anchorMax = new Vector2(0.5f, 1f);
+        eventRect.pivot = new Vector2(0.5f, 1f);
+        eventRect.anchoredPosition = new Vector2(0f, -92f);
+        eventRect.sizeDelta = new Vector2(620f, 36f);
     }
 
     private void UpdateTimerLabel()
@@ -255,11 +398,105 @@ public class FloorFlowManager : MonoBehaviour
         if (exitSpawned)
         {
             timerLabel.text = "Floor cleared - enter the portal";
+            if (waveLabel != null)
+            {
+                waveLabel.text = "Stage: Extraction";
+            }
             return;
         }
 
         int displaySeconds = Mathf.CeilToInt(remainingTime);
         timerLabel.text = "Time left: " + displaySeconds + "s";
+        if (waveLabel != null && currentWaveIndex >= 0 && currentWaveIndex < waveStages.Count)
+        {
+            waveLabel.text = "Stage: " + waveStages[currentWaveIndex].displayName;
+        }
+    }
+
+    private void UpdateWaveStage()
+    {
+        if (waveStages == null || waveStages.Count == 0)
+        {
+            return;
+        }
+
+        float normalizedTime = floorDuration <= 0f ? 1f : Mathf.Clamp01(elapsedTime / floorDuration);
+        int newWaveIndex = 0;
+        for (int i = 0; i < waveStages.Count; i++)
+        {
+            if (normalizedTime >= waveStages[i].startTimeNormalized)
+            {
+                newWaveIndex = i;
+            }
+        }
+
+        if (newWaveIndex == currentWaveIndex)
+        {
+            return;
+        }
+
+        currentWaveIndex = newWaveIndex;
+        WaveStage stage = waveStages[currentWaveIndex];
+
+        if (enemySpawner != null)
+        {
+            enemySpawner.ApplyWaveSettings(
+                stage.spawnInterval,
+                stage.batchCount,
+                stage.healthMultiplier,
+                stage.speedMultiplier,
+                stage.scaleMultiplier,
+                stage.eliteChance,
+                stage.enemyTint,
+                stage.eliteTint
+            );
+        }
+
+        if (!string.IsNullOrEmpty(stage.corruptionMessage))
+        {
+            ShowEventMessage(stage.corruptionMessage);
+        }
+
+        if (stage.corruptionIncrease > 0 && corruptionSystem != null)
+        {
+            corruptionSystem.AddCorruption(stage.corruptionIncrease);
+        }
+    }
+
+    private void ShowEventMessage(string message)
+    {
+        if (eventLabel == null)
+        {
+            return;
+        }
+
+        if (eventRoutine != null)
+        {
+            StopCoroutine(eventRoutine);
+        }
+
+        eventRoutine = StartCoroutine(EventMessageRoutine(message));
+    }
+
+    private IEnumerator EventMessageRoutine(string message)
+    {
+        eventLabel.text = message;
+        Color visibleColor = new Color(0.95f, 0.86f, 0.88f, 0.96f);
+        eventLabel.color = visibleColor;
+        yield return new WaitForSeconds(1.75f);
+
+        float fadeDuration = 0.6f;
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
+            eventLabel.color = new Color(visibleColor.r, visibleColor.g, visibleColor.b, Mathf.Lerp(visibleColor.a, 0f, t));
+            yield return null;
+        }
+
+        eventLabel.text = string.Empty;
+        eventRoutine = null;
     }
 
     private Sprite GetWhiteSprite()

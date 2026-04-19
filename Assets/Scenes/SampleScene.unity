@@ -1211,6 +1211,7 @@ GameObject:
   - component: {fileID: 753601273}
   - component: {fileID: 753601274}
   - component: {fileID: 753601275}
+  - component: {fileID: 753601276}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -1268,9 +1269,22 @@ MonoBehaviour:
   - {fileID: 6001001001001001001, guid: 6ee8ec75d8c94fe0a3e2737a0a8bde11, type: 3}
   - {fileID: 6001001001001001002, guid: 2454dd8a70484aef8211dbf33ca1bfca, type: 3}
   - {fileID: 6001001001001001003, guid: 9443cb5ccb37445fbd2a263665307f9e, type: 3}
-  floorDuration: 40
+  floorDuration: 150
   exitDistance: 3.5
   playerSpawnPosition: {x: 0, y: 0, z: 0}
+--- !u!114 &753601276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 753601272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 892527d2310643b6baf96f09f0f37ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AlignmentHUD
+  corruptionSystem: {fileID: 1995000003}
 --- !u!1 &762168580
 GameObject:
   m_ObjectHideFlags: 0

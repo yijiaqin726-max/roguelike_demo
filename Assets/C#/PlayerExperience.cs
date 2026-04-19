@@ -6,11 +6,15 @@ public class PlayerExperience : MonoBehaviour
     public int expToNextLevel = 5;
     public int level = 1;
 
-    private PlayerController playerController;
+    [SerializeField] private int expIncreasePerLevel = 3;
+    [SerializeField] private LevelUpUI levelUpUI;
 
-    void Start()
+    private void Awake()
     {
-        playerController = GetComponent<PlayerController>();
+        if (levelUpUI == null)
+        {
+            levelUpUI = FindObjectOfType<LevelUpUI>();
+        }
     }
 
     public void GainExp(int amount)
@@ -24,16 +28,20 @@ public class PlayerExperience : MonoBehaviour
         }
     }
 
-void LevelUp()
-{
-    level++;
-    currentExp = 0;
-    expToNextLevel += 3;
-
-    LevelUpUI ui = FindObjectOfType<LevelUpUI>();
-    if (ui != null)
+    private void LevelUp()
     {
-        ui.Show();
+        level++;
+        currentExp = 0;
+        expToNextLevel += expIncreasePerLevel;
+
+        if (levelUpUI == null)
+        {
+            levelUpUI = FindObjectOfType<LevelUpUI>();
+        }
+
+        if (levelUpUI != null)
+        {
+            levelUpUI.Show();
+        }
     }
-}
 }

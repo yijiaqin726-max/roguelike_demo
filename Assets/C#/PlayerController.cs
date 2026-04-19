@@ -1,21 +1,29 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5f;
+    [FormerlySerializedAs("speed")]
+    public float moveSpeed = 5f;
 
     [Header("Attack Settings")]
     public GameObject bulletPrefab;
-    public float attackInterval = 1f;
+    [FormerlySerializedAs("attackInterval")]
+    public float attackIntervalSeconds = 1f;
+    public float attackIntervalMultiplier = 1f;
     public float attackPoseDuration = 0.12f;
+    public float minimumAttackInterval = 0.05f;
     public Sprite holdSprite;
     public Sprite gunSprite;
+
+    [Header("Targeting")]
+    [SerializeField] private string enemyTag = "Enemy";
 
     private float attackTimer;
     private float attackPoseTimer;
     private SpriteRenderer spriteRenderer;
 
-    void Start()
+    private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -25,42 +33,50 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         MovePlayer();
         AutoAttack();
         UpdateAttackPose();
     }
 
-    void MovePlayer()
+    private void MovePlayer()
     {
         float moveX = Input.GetAxis("Horizontal");
         float moveY = Input.GetAxis("Vertical");
 
-        Vector3 move = new Vector3(moveX, moveY, 0);
-        transform.position += move * speed * Time.deltaTime;
+        Vector3 move = new Vector3(moveX, moveY, 0f);
+        transform.position += move * moveSpeed * Time.deltaTime;
     }
 
-    void AutoAttack()
+    private void AutoAttack()
     {
         attackTimer += Time.deltaTime;
+        float currentAttackInterval = Mathf.Max(minimumAttackInterval, attackIntervalSeconds * attackIntervalMultiplier);
 
-        if (attackTimer >= attackInterval)
+        if (attackTimer < currentAttackInterval)
         {
-            attackTimer = 0f;
-            Transform nearestEnemy = FindNearestEnemy();
-
-            if (nearestEnemy != null)
-            {
-                GameObject bulletObj = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-                Bullet bulletScript = bulletObj.GetComponent<Bullet>();
-                bulletScript.SetTarget(nearestEnemy);
-                TriggerAttackPose();
-            }
+            return;
         }
+
+        attackTimer = 0f;
+        Transform nearestEnemy = FindNearestEnemy();
+        if (nearestEnemy == null || bulletPrefab == null)
+        {
+            return;
+        }
+
+        GameObject bulletObject = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        Bullet bullet = bulletObject.GetComponent<Bullet>();
+        if (bullet != null)
+        {
+            bullet.SetTarget(nearestEnemy);
+        }
+
+        TriggerAttackPose();
     }
 
-    void TriggerAttackPose()
+    private void TriggerAttackPose()
     {
         attackPoseTimer = attackPoseDuration;
 
@@ -70,7 +86,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void UpdateAttackPose()
+    private void UpdateAttackPose()
     {
         if (attackPoseTimer <= 0f)
         {
@@ -85,9 +101,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    Transform FindNearestEnemy()
+    private Transform FindNearestEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
         Transform nearest = null;
         float minDistance = Mathf.Infinity;
 
