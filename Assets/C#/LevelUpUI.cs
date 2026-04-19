@@ -38,6 +38,7 @@ public class LevelUpUI : MonoBehaviour
 
     [Header("Presentation")]
     [SerializeField] private Color panelTint = new Color(0.05f, 0.03f, 0.05f, 0.94f);
+    [SerializeField] private Vector2 panelSize = new Vector2(760f, 540f);
     [SerializeField] private Vector2 optionButtonSize = new Vector2(240f, 72f);
     [SerializeField] private Color buttonHighlightColor = new Color(0.38f, 0.19f, 0.2f, 1f);
     [SerializeField] private Color buttonPressedColor = new Color(0.11f, 0.07f, 0.08f, 1f);
@@ -163,10 +164,20 @@ public class LevelUpUI : MonoBehaviour
             panelImage.color = panelTint;
         }
 
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        if (panelRect != null)
+        {
+            panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+            panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.anchoredPosition = Vector2.zero;
+            panelRect.sizeDelta = panelSize;
+        }
+
         EnsurePanelChrome();
 
         titleLabel = EnsureTextElement("UpgradeTitle", UpgradeTitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -28f), new Vector2(400f, 36f), 28, new Color(0.96f, 0.9f, 0.78f, 1f));
-        subtitleLabel = EnsureTextElement("UpgradeSubtitle", UpgradeSubtitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -60f), new Vector2(470f, 28f), 15, subtitleColor);
+        subtitleLabel = EnsureTextElement("UpgradeSubtitle", UpgradeSubtitleText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -60f), new Vector2(470f, 28f), 14, subtitleColor);
 
         string tendencyText = corruptionSystem != null ? corruptionSystem.GetAlignmentSummary() : UnknownAlignmentText;
         tendencyLabel = EnsureTextElement("AlignmentHint", tendencyText, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -92f), new Vector2(450f, 24f), 14, new Color(0.9f, 0.84f, 0.84f, 1f));

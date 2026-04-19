@@ -6,26 +6,22 @@ public class PlayerHealthUI : MonoBehaviour
     public PlayerHealth playerHealth;
     public Image healthFill;
 
-    [Header("Layout")]
-    [SerializeField] private Vector2 barSize = new Vector2(300f, 34f);
-    [SerializeField] private Vector2 barAnchorPosition = new Vector2(24f, -20f);
-    [SerializeField] private int healthTextFontSize = 16;
-    [SerializeField] private int headerFontSize = 11;
-
     [Header("Colors")]
-    [SerializeField] private Color backgroundColor = new Color(0.09f, 0.05f, 0.06f, 0.95f);
-    [SerializeField] private Color fillColor = new Color(0.78f, 0.18f, 0.22f, 1f);
-    [SerializeField] private Color frameColor = new Color(0.78f, 0.63f, 0.45f, 0.75f);
-    [SerializeField] private Color textColor = new Color(0.98f, 0.95f, 0.9f, 1f);
-    [SerializeField] private Color headerColor = new Color(0.88f, 0.82f, 0.72f, 0.92f);
+    [SerializeField] private Color backgroundColor = new Color(0.11f, 0.055f, 0.06f, 0.96f);
+    [SerializeField] private Color fillColor = new Color(0.86f, 0.22f, 0.24f, 1f);
+    [SerializeField] private Color frameColor = new Color(0.7f, 0.52f, 0.4f, 0.9f);
+    [SerializeField] private Color textColor = new Color(0.99f, 0.97f, 0.94f, 1f);
+    [SerializeField] private Color headerColor = new Color(0.93f, 0.87f, 0.78f, 0.98f);
 
+    private RectTransform barSlotRect;
     private Text healthText;
-    private Text headerText;
+    private bool layoutInitialized;
+    private Font uiFont;
 
     private void Start()
     {
-        StyleHealthBar();
-        EnsureHealthText();
+        EnsureLayout();
+        RefreshHealth();
     }
 
     private void Update()
@@ -39,33 +35,49 @@ public class PlayerHealthUI : MonoBehaviour
         ratio = Mathf.Clamp01(ratio);
         healthFill.fillAmount = ratio;
 
-        StyleHealthBar();
-        EnsureHealthText();
-        if (healthText != null)
-        {
-            int percent = Mathf.RoundToInt(ratio * 100f);
-            healthText.text = playerHealth.currentHealth + "/" + playerHealth.maxHealth + " (" + percent + "%)";
-        }
+        EnsureLayout();
+        RefreshHealth();
     }
 
-    private void StyleHealthBar()
+    private void EnsureLayout()
     {
-        if (healthFill == null || healthFill.transform.parent == null)
+        if (layoutInitialized || healthFill == null || healthFill.transform.parent == null)
         {
             return;
         }
 
-        RectTransform parentRect = healthFill.transform.parent as RectTransform;
-        if (parentRect != null)
+        uiFont = StatusHudCardLayout.LoadPreferredFont();
+        StatusHudCardLayout.EnsureCard(
+            uiFont,
+            new Color(0.07f, 0.06f, 0.065f, 0.92f),
+            new Color(0.42f, 0.33f, 0.28f, 0.9f),
+            new Color(0.94f, 0.88f, 0.8f, 1f));
+
+        StatusHudCardLayout.EnsureStatusRow(
+            uiFont,
+            "HealthRow",
+            "HEALTH",
+            headerColor,
+            textColor,
+            out barSlotRect,
+            out healthText);
+
+        RectTransform barRect = healthFill.transform.parent as RectTransform;
+        if (barRect == null || barSlotRect == null)
         {
-            parentRect.anchorMin = new Vector2(0f, 1f);
-            parentRect.anchorMax = new Vector2(0f, 1f);
-            parentRect.pivot = new Vector2(0f, 1f);
-            parentRect.anchoredPosition = barAnchorPosition;
-            parentRect.sizeDelta = barSize;
+            return;
         }
 
-        Image backgroundImage = healthFill.transform.parent.GetComponent<Image>();
+        barRect.SetParent(barSlotRect, false);
+        barRect.anchorMin = Vector2.zero;
+        barRect.anchorMax = Vector2.one;
+        barRect.pivot = new Vector2(0.5f, 0.5f);
+        barRect.anchoredPosition = Vector2.zero;
+        barRect.offsetMin = Vector2.zero;
+        barRect.offsetMax = Vector2.zero;
+        barRect.sizeDelta = Vector2.zero;
+
+        Image backgroundImage = barRect.GetComponent<Image>();
         if (backgroundImage != null)
         {
             backgroundImage.color = backgroundColor;
@@ -73,119 +85,50 @@ public class PlayerHealthUI : MonoBehaviour
             backgroundImage.sprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Background.psd");
         }
 
-        Outline backgroundOutline = healthFill.transform.parent.GetComponent<Outline>();
+        Outline backgroundOutline = barRect.GetComponent<Outline>();
         if (backgroundOutline == null)
         {
-            backgroundOutline = healthFill.transform.parent.gameObject.AddComponent<Outline>();
+            backgroundOutline = barRect.gameObject.AddComponent<Outline>();
         }
 
         backgroundOutline.effectColor = frameColor;
         backgroundOutline.effectDistance = new Vector2(2f, -2f);
 
-        Shadow backgroundShadow = healthFill.transform.parent.GetComponent<Shadow>();
+        Shadow backgroundShadow = barRect.GetComponent<Shadow>();
         if (backgroundShadow == null)
         {
-            backgroundShadow = healthFill.transform.parent.gameObject.AddComponent<Shadow>();
+            backgroundShadow = barRect.gameObject.AddComponent<Shadow>();
         }
 
-        backgroundShadow.effectColor = new Color(0f, 0f, 0f, 0.42f);
+        backgroundShadow.effectColor = new Color(0f, 0f, 0f, 0.5f);
         backgroundShadow.effectDistance = new Vector2(0f, -3f);
 
         RectTransform fillRect = healthFill.rectTransform;
         fillRect.anchorMin = new Vector2(0f, 0f);
         fillRect.anchorMax = new Vector2(1f, 1f);
-        fillRect.offsetMin = new Vector2(4f, 4f);
-        fillRect.offsetMax = new Vector2(-4f, -4f);
+        fillRect.offsetMin = new Vector2(2f, 2f);
+        fillRect.offsetMax = new Vector2(-2f, -2f);
         healthFill.color = fillColor;
         healthFill.type = Image.Type.Filled;
         healthFill.fillMethod = Image.FillMethod.Horizontal;
 
-        EnsureHeaderText();
+        layoutInitialized = true;
     }
 
-    private void EnsureHealthText()
+    private void RefreshHealth()
     {
-        if (healthText != null || healthFill == null || healthFill.transform.parent == null)
+        if (playerHealth == null || healthFill == null || playerHealth.maxHealth <= 0)
         {
             return;
         }
 
-        Transform parent = healthFill.transform.parent;
-        Transform existing = parent.Find("HealthValueText");
-        if (existing != null)
+        float ratio = Mathf.Clamp01((float)playerHealth.currentHealth / playerHealth.maxHealth);
+        healthFill.fillAmount = ratio;
+
+        if (healthText != null)
         {
-            healthText = existing.GetComponent<Text>();
-            StyleText(healthText, healthTextFontSize, textColor, FontStyle.Bold, TextAnchor.MiddleCenter, new Vector2(2f, -2f));
-            return;
+            int percent = Mathf.RoundToInt(ratio * 100f);
+            healthText.text = playerHealth.currentHealth + "/" + playerHealth.maxHealth + "  " + percent + "%";
         }
-
-        GameObject textObject = new GameObject("HealthValueText");
-        textObject.transform.SetParent(parent, false);
-
-        RectTransform rect = textObject.AddComponent<RectTransform>();
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        healthText = textObject.AddComponent<Text>();
-        healthText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        StyleText(healthText, healthTextFontSize, textColor, FontStyle.Bold, TextAnchor.MiddleCenter, new Vector2(2f, -2f));
-    }
-
-    private void EnsureHeaderText()
-    {
-        if (headerText != null || healthFill == null || healthFill.transform.parent == null)
-        {
-            return;
-        }
-
-        Transform parent = healthFill.transform.parent;
-        Transform existing = parent.Find("HealthHeaderText");
-        if (existing != null)
-        {
-            headerText = existing.GetComponent<Text>();
-            StyleText(headerText, headerFontSize, headerColor, FontStyle.Bold, TextAnchor.UpperLeft, new Vector2(1f, -1f));
-            return;
-        }
-
-        GameObject textObject = new GameObject("HealthHeaderText");
-        textObject.transform.SetParent(parent, false);
-
-        RectTransform rect = textObject.AddComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0f, 1f);
-        rect.anchorMax = new Vector2(1f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = new Vector2(0f, -4f);
-        rect.sizeDelta = new Vector2(0f, 14f);
-
-        headerText = textObject.AddComponent<Text>();
-        headerText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        headerText.text = "VITALITY";
-        StyleText(headerText, headerFontSize, headerColor, FontStyle.Bold, TextAnchor.UpperLeft, new Vector2(1f, -1f));
-        headerText.raycastTarget = false;
-    }
-
-    private static void StyleText(Text text, int fontSize, Color color, FontStyle fontStyle, TextAnchor alignment, Vector2 outlineOffset)
-    {
-        if (text == null)
-        {
-            return;
-        }
-
-        text.fontSize = fontSize;
-        text.alignment = alignment;
-        text.color = color;
-        text.fontStyle = fontStyle;
-        text.raycastTarget = false;
-
-        Outline outline = text.GetComponent<Outline>();
-        if (outline == null)
-        {
-            outline = text.gameObject.AddComponent<Outline>();
-        }
-
-        outline.effectColor = new Color(0.06f, 0.02f, 0.03f, 0.82f);
-        outline.effectDistance = outlineOffset;
     }
 }

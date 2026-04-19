@@ -101,9 +101,11 @@
     <Compile Include="Assets\C#\PlayerHitFeedback.cs" />
     <Compile Include="Assets\C#\PlayerExperience.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
+    <Compile Include="Assets\C#\GameplayHudLayout.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\C#\OathDamageShield.cs" />
     <Compile Include="Assets\C#\FloorExitPortal.cs" />
+    <Compile Include="Assets\C#\StatusHudCardLayout.cs" />
     <Compile Include="Assets\C#\FloorFlowManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />

@@ -26,6 +26,25 @@ public class FloorFlowManager : MonoBehaviour
     public EnemySpawner enemySpawner;
     public Transform playerTransform;
     public Sprite[] floorBackgrounds;
+    [SerializeField] private string[] backgroundResourcePaths =
+    {
+        "LevelBackgrounds/desert-badlands",
+        "LevelBackgrounds/grassland-ruins",
+        "LevelBackgrounds/room-corrupted-chapel"
+    };
+    [Header("Top HUD")]
+    [SerializeField] private Vector2 topHudOffset = new Vector2(0f, -18f);
+    [SerializeField] private float topHudCardWidth = 348f;
+    [SerializeField] private Color topHudPlateColor = new Color(0.07f, 0.06f, 0.065f, 0.92f);
+    [SerializeField] private Color topHudBackPlateColor = new Color(0.015f, 0.012f, 0.018f, 0.84f);
+    [SerializeField] private Color topHudFrameColor = new Color(0.42f, 0.33f, 0.28f, 0.9f);
+    [SerializeField] private Color topHudHeaderBandColor = new Color(0.19f, 0.16f, 0.15f, 0.82f);
+    [SerializeField] private Color topHudTimerColor = new Color(0.97f, 0.93f, 0.86f, 1f);
+    [SerializeField] private Color topHudStageColor = new Color(0.8f, 0.79f, 0.77f, 1f);
+    [SerializeField] private Color topHudTimerShadowColor = new Color(0f, 0f, 0f, 0.62f);
+    [SerializeField] private Color topHudStageDividerColor = new Color(0.56f, 0.49f, 0.43f, 0.34f);
+    [SerializeField] private int topHudTimerFontSize = 42;
+    [SerializeField] private int topHudStageFontSize = 14;
     public float floorDuration = 150f;
     public float exitDistance = 3.5f;
     public Vector3 playerSpawnPosition = Vector3.zero;
@@ -35,7 +54,8 @@ public class FloorFlowManager : MonoBehaviour
     private float elapsedTime;
     private bool exitSpawned;
     private FloorExitPortal activePortal;
-    private Canvas hudCanvas;
+    private RectTransform topCenterRoot;
+    private RectTransform overlayRoot;
     private Text timerLabel;
     private Text waveLabel;
     private Text eventLabel;
@@ -54,6 +74,7 @@ public class FloorFlowManager : MonoBehaviour
     private GameObject promptPlate;
     private GameObject titleCardPlate;
     private bool transitionInProgress;
+    private Sprite[] loadedBackgrounds;
 
     private void Start()
     {
@@ -244,7 +265,8 @@ public class FloorFlowManager : MonoBehaviour
 
     private void ApplyFloorBackground()
     {
-        if (groundRenderer == null || floorBackgrounds == null || floorBackgrounds.Length == 0)
+        Sprite[] availableBackgrounds = GetAvailableBackgrounds();
+        if (groundRenderer == null || availableBackgrounds == null || availableBackgrounds.Length == 0)
         {
             return;
         }
@@ -255,7 +277,43 @@ public class FloorFlowManager : MonoBehaviour
             floorIndex = Mathf.Max(0, DemoRunManager.Instance.CurrentFloor - 1);
         }
 
-        groundRenderer.sprite = floorBackgrounds[floorIndex % floorBackgrounds.Length];
+        groundRenderer.sprite = availableBackgrounds[floorIndex % availableBackgrounds.Length];
+    }
+
+    private Sprite[] GetAvailableBackgrounds()
+    {
+        if (loadedBackgrounds != null && loadedBackgrounds.Length > 0)
+        {
+            return loadedBackgrounds;
+        }
+
+        if (backgroundResourcePaths != null && backgroundResourcePaths.Length > 0)
+        {
+            List<Sprite> resourceBackgrounds = new List<Sprite>();
+            for (int i = 0; i < backgroundResourcePaths.Length; i++)
+            {
+                string resourcePath = backgroundResourcePaths[i];
+                if (string.IsNullOrWhiteSpace(resourcePath))
+                {
+                    continue;
+                }
+
+                Sprite[] sprites = Resources.LoadAll<Sprite>(resourcePath);
+                if (sprites != null && sprites.Length > 0 && sprites[0] != null)
+                {
+                    resourceBackgrounds.Add(sprites[0]);
+                }
+            }
+
+            if (resourceBackgrounds.Count > 0)
+            {
+                loadedBackgrounds = resourceBackgrounds.ToArray();
+                return loadedBackgrounds;
+            }
+        }
+
+        loadedBackgrounds = floorBackgrounds;
+        return loadedBackgrounds;
     }
 
     private void SpawnExitPortal()
@@ -359,114 +417,114 @@ public class FloorFlowManager : MonoBehaviour
 
     private void BuildHudIfNeeded()
     {
-        if (hudCanvas != null)
+        if (topCenterRoot != null && overlayRoot != null)
         {
             return;
         }
 
         uiFont = LoadPreferredFont();
 
-        GameObject canvasObject = new GameObject("FloorHudCanvas");
-        canvasObject.transform.SetParent(transform, false);
-        hudCanvas = canvasObject.AddComponent<Canvas>();
-        hudCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        hudCanvas.sortingOrder = 320;
+        topCenterRoot = GameplayHudLayout.EnsureTopCenterRoot() as RectTransform;
+        overlayRoot = GameplayHudLayout.EnsureOverlayRoot() as RectTransform;
+        if (topCenterRoot == null || overlayRoot == null)
+        {
+            return;
+        }
 
-        CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-        scaler.matchWidthOrHeight = 0.6f;
+        topCenterRoot.anchoredPosition = topHudOffset;
 
-        canvasObject.AddComponent<GraphicRaycaster>();
-
-        GameObject plate = CreateImageObject("TopPlate", canvasObject.transform, new Color(0.06f, 0.055f, 0.07f, 0.9f), true);
-        RectTransform plateRect = plate.GetComponent<RectTransform>();
-        plateRect.anchorMin = new Vector2(0.5f, 1f);
-        plateRect.anchorMax = new Vector2(0.5f, 1f);
-        plateRect.pivot = new Vector2(0.5f, 1f);
-        plateRect.anchoredPosition = new Vector2(0f, -16f);
-        plateRect.sizeDelta = new Vector2(340f, 104f);
-
-        CreateFrameLine(plate.transform, "PlateTop", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -2f), new Vector2(0f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.85f));
-        CreateFrameLine(plate.transform, "PlateBottom", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 2f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
-        CreateFrameLine(plate.transform, "PlateLeft", new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(2f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
-        CreateFrameLine(plate.transform, "PlateRight", new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-2f, 0f), new Vector2(0f, 0f), new Color(0.36f, 0.29f, 0.23f, 0.55f));
+        GameObject plate = CreateTopTimerCard();
 
         timerLabel = CreateText(
             "FloorTimerLabel",
             plate.transform,
             "02:30",
-            42,
-            new Color(0.95f, 0.92f, 0.84f, 1f),
+            topHudTimerFontSize,
+            topHudTimerColor,
             TextAnchor.MiddleCenter,
-            new Vector2(0f, -18f),
-            new Vector2(300f, 44f),
+            Vector2.zero,
+            new Vector2(topHudCardWidth - 48f, 46f),
             FontStyle.Bold,
-            new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 1f));
+        LayoutElement timerLayout = timerLabel.gameObject.AddComponent<LayoutElement>();
+        timerLayout.preferredHeight = 46f;
+        RefreshTextOutline(timerLabel, topHudTimerShadowColor, new Vector2(1f, -2f));
 
         waveLabel = CreateText(
             "WaveLabel",
             plate.transform,
             "Stage: Ashen Approach",
-            16,
-            new Color(0.77f, 0.74f, 0.7f, 1f),
+            topHudStageFontSize,
+            topHudStageColor,
             TextAnchor.MiddleCenter,
-            new Vector2(0f, -64f),
-            new Vector2(290f, 24f),
+            Vector2.zero,
+            new Vector2(topHudCardWidth - 56f, 20f),
             FontStyle.Normal,
-            new Vector2(0.5f, 1f),
-            new Vector2(0.5f, 1f),
+            new Vector2(0.5f, 0.5f),
+            new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 1f));
+        LayoutElement waveLayout = waveLabel.gameObject.AddComponent<LayoutElement>();
+        waveLayout.preferredHeight = 20f;
+        RefreshTextOutline(waveLabel, new Color(0f, 0f, 0f, 0.36f), new Vector2(1f, -1f));
 
-        GameObject eventPlate = CreateImageObject("EventPlate", canvasObject.transform, new Color(0.09f, 0.06f, 0.07f, 0.78f), true);
+        RectTransform stageDivider = CreateVisual(
+            "TopPlateStageDivider",
+            plate.transform,
+            topHudStageDividerColor,
+            true);
+        stageDivider.sizeDelta = new Vector2(topHudCardWidth - 96f, 1f);
+        LayoutElement dividerLayout = stageDivider.gameObject.AddComponent<LayoutElement>();
+        dividerLayout.preferredWidth = topHudCardWidth - 96f;
+        dividerLayout.preferredHeight = 1f;
+
+        GameObject eventPlate = CreateImageObject("EventPlate", topCenterRoot, new Color(0.09f, 0.06f, 0.07f, 0.78f), true);
         RectTransform eventPlateRect = eventPlate.GetComponent<RectTransform>();
         eventPlateRect.anchorMin = new Vector2(0.5f, 1f);
         eventPlateRect.anchorMax = new Vector2(0.5f, 1f);
         eventPlateRect.pivot = new Vector2(0.5f, 1f);
-        eventPlateRect.anchoredPosition = new Vector2(0f, -128f);
-        eventPlateRect.sizeDelta = new Vector2(620f, 42f);
+        eventPlateRect.anchoredPosition = new Vector2(0f, -104f);
+        eventPlateRect.sizeDelta = new Vector2(440f, 34f);
 
         eventLabel = CreateText(
             "CorruptionEventLabel",
             eventPlate.transform,
             string.Empty,
-            20,
+            16,
             new Color(0.96f, 0.86f, 0.88f, 0f),
             TextAnchor.MiddleCenter,
             new Vector2(0f, 0f),
-            new Vector2(580f, 28f),
+            new Vector2(408f, 24f),
             FontStyle.Bold,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f));
 
-        promptPlate = CreateImageObject("PortalPromptPlate", canvasObject.transform, new Color(0.09f, 0.06f, 0.07f, 0.84f), true);
+        promptPlate = CreateImageObject("PortalPromptPlate", overlayRoot, new Color(0.09f, 0.06f, 0.07f, 0.84f), true);
         RectTransform promptPlateRect = promptPlate.GetComponent<RectTransform>();
         promptPlateRect.anchorMin = new Vector2(0.5f, 0f);
         promptPlateRect.anchorMax = new Vector2(0.5f, 0f);
         promptPlateRect.pivot = new Vector2(0.5f, 0f);
-        promptPlateRect.anchoredPosition = new Vector2(0f, 52f);
-        promptPlateRect.sizeDelta = new Vector2(360f, 42f);
+        promptPlateRect.anchoredPosition = new Vector2(0f, 48f);
+        promptPlateRect.sizeDelta = new Vector2(320f, 38f);
 
         promptLabel = CreateText(
             "PortalPromptLabel",
             promptPlate.transform,
             "Press E to Descend",
-            20,
+            18,
             new Color(0.97f, 0.92f, 0.84f, 1f),
             TextAnchor.MiddleCenter,
             Vector2.zero,
-            new Vector2(320f, 26f),
+            new Vector2(288f, 24f),
             FontStyle.Bold,
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f),
             new Vector2(0.5f, 0.5f));
         promptPlate.SetActive(false);
 
-        titleCardPlate = CreateImageObject("FloorTitleCard", canvasObject.transform, new Color(0.07f, 0.04f, 0.05f, 0.88f), true);
+        titleCardPlate = CreateImageObject("FloorTitleCard", overlayRoot, new Color(0.07f, 0.04f, 0.05f, 0.88f), true);
         RectTransform titlePlateRect = titleCardPlate.GetComponent<RectTransform>();
         titlePlateRect.anchorMin = new Vector2(0.5f, 0.5f);
         titlePlateRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -519,7 +577,7 @@ public class FloorFlowManager : MonoBehaviour
             new Vector2(0.5f, 0.5f));
         titleCardPlate.SetActive(false);
 
-        GameObject fadeObject = CreateImageObject("FloorFadeOverlay", canvasObject.transform, new Color(0.02f, 0.01f, 0.02f, 0f), false);
+        GameObject fadeObject = CreateImageObject("FloorFadeOverlay", overlayRoot, new Color(0.02f, 0.01f, 0.02f, 0f), false);
         RectTransform fadeRect = fadeObject.GetComponent<RectTransform>();
         fadeRect.anchorMin = Vector2.zero;
         fadeRect.anchorMax = Vector2.one;
@@ -527,6 +585,96 @@ public class FloorFlowManager : MonoBehaviour
         fadeRect.offsetMax = Vector2.zero;
         fadeOverlay = fadeObject.GetComponent<Image>();
         fadeOverlay.raycastTarget = false;
+    }
+
+    private GameObject CreateTopTimerCard()
+    {
+        GameObject plate = CreateImageObject("TopPlate", topCenterRoot, new Color(0f, 0f, 0f, 0f), true);
+        RectTransform plateRect = plate.GetComponent<RectTransform>();
+        plateRect.anchorMin = new Vector2(0.5f, 1f);
+        plateRect.anchorMax = new Vector2(0.5f, 1f);
+        plateRect.pivot = new Vector2(0.5f, 1f);
+        plateRect.anchoredPosition = Vector2.zero;
+        plateRect.sizeDelta = new Vector2(topHudCardWidth, 0f);
+
+        VerticalLayoutGroup layout = plate.AddComponent<VerticalLayoutGroup>();
+        layout.padding = new RectOffset(24, 24, 17, 14);
+        layout.spacing = 5f;
+        layout.childAlignment = TextAnchor.UpperCenter;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+
+        ContentSizeFitter fitter = plate.AddComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        LayoutElement plateLayout = plate.AddComponent<LayoutElement>();
+        plateLayout.preferredWidth = topHudCardWidth;
+
+        Shadow plateShadow = plate.AddComponent<Shadow>();
+        plateShadow.effectColor = new Color(0f, 0f, 0f, 0.42f);
+        plateShadow.effectDistance = new Vector2(0f, -6f);
+
+        RectTransform backPlate = CreateStretchVisual(
+            "TopPlateBack",
+            plate.transform,
+            topHudBackPlateColor,
+            true,
+            new Vector2(-6f, -6f),
+            new Vector2(6f, 6f));
+        SetIgnoreLayout(backPlate.gameObject);
+        AddOutline(backPlate.gameObject, new Color(topHudFrameColor.r, topHudFrameColor.g, topHudFrameColor.b, 0.42f), new Vector2(1f, -1f));
+
+        RectTransform innerPlate = CreateStretchVisual(
+            "TopPlateInner",
+            plate.transform,
+            topHudPlateColor,
+            true,
+            Vector2.zero,
+            Vector2.zero);
+        SetIgnoreLayout(innerPlate.gameObject);
+        AddOutline(innerPlate.gameObject, topHudFrameColor, new Vector2(1f, -1f));
+        AddShadow(innerPlate.gameObject, new Color(0f, 0f, 0f, 0.18f), new Vector2(0f, -1f));
+
+        RectTransform headerBand = CreateVisual(
+            "TopPlateHeaderBand",
+            plate.transform,
+            topHudHeaderBandColor,
+            true);
+        headerBand.anchorMin = new Vector2(0f, 1f);
+        headerBand.anchorMax = new Vector2(1f, 1f);
+        headerBand.pivot = new Vector2(0.5f, 1f);
+        headerBand.anchoredPosition = Vector2.zero;
+        headerBand.sizeDelta = new Vector2(0f, 34f);
+        SetIgnoreLayout(headerBand.gameObject);
+
+        RectTransform topAccent = CreateVisual(
+            "TopPlateAccentTop",
+            plate.transform,
+            new Color(0.78f, 0.71f, 0.61f, 0.65f),
+            true);
+        topAccent.anchorMin = new Vector2(0f, 1f);
+        topAccent.anchorMax = new Vector2(0f, 1f);
+        topAccent.pivot = new Vector2(0f, 1f);
+        topAccent.anchoredPosition = new Vector2(18f, -10f);
+        topAccent.sizeDelta = new Vector2(52f, 2f);
+        SetIgnoreLayout(topAccent.gameObject);
+
+        RectTransform bottomAccent = CreateVisual(
+            "TopPlateAccentBottom",
+            plate.transform,
+            new Color(0.43f, 0.16f, 0.18f, 0.55f),
+            true);
+        bottomAccent.anchorMin = new Vector2(1f, 0f);
+        bottomAccent.anchorMax = new Vector2(1f, 0f);
+        bottomAccent.pivot = new Vector2(1f, 0f);
+        bottomAccent.anchoredPosition = new Vector2(-18f, 10f);
+        bottomAccent.sizeDelta = new Vector2(68f, 2f);
+        SetIgnoreLayout(bottomAccent.gameObject);
+
+        return plate;
     }
 
     private void UpdateTimerLabel()
@@ -777,6 +925,21 @@ public class FloorFlowManager : MonoBehaviour
         return imageObject;
     }
 
+    private RectTransform CreateVisual(string name, Transform parent, Color color, bool sliced)
+    {
+        return CreateImageObject(name, parent, color, sliced).GetComponent<RectTransform>();
+    }
+
+    private RectTransform CreateStretchVisual(string name, Transform parent, Color color, bool sliced, Vector2 offsetMin, Vector2 offsetMax)
+    {
+        RectTransform rect = CreateVisual(name, parent, color, sliced);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = offsetMin;
+        rect.offsetMax = offsetMax;
+        return rect;
+    }
+
     private void CreateFrameLine(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax, Color color)
     {
         GameObject line = CreateImageObject(name, parent, color, false);
@@ -825,6 +988,58 @@ public class FloorFlowManager : MonoBehaviour
         rect.sizeDelta = sizeDelta;
 
         return text;
+    }
+
+    private static void RefreshTextOutline(Text text, Color color, Vector2 distance)
+    {
+        if (text == null)
+        {
+            return;
+        }
+
+        Outline outline = text.GetComponent<Outline>();
+        if (outline == null)
+        {
+            outline = text.gameObject.AddComponent<Outline>();
+        }
+
+        outline.effectColor = color;
+        outline.effectDistance = distance;
+    }
+
+    private static void AddOutline(GameObject target, Color color, Vector2 distance)
+    {
+        Outline outline = target.GetComponent<Outline>();
+        if (outline == null)
+        {
+            outline = target.AddComponent<Outline>();
+        }
+
+        outline.effectColor = color;
+        outline.effectDistance = distance;
+    }
+
+    private static void AddShadow(GameObject target, Color color, Vector2 distance)
+    {
+        Shadow shadow = target.GetComponent<Shadow>();
+        if (shadow == null)
+        {
+            shadow = target.AddComponent<Shadow>();
+        }
+
+        shadow.effectColor = color;
+        shadow.effectDistance = distance;
+    }
+
+    private static void SetIgnoreLayout(GameObject target)
+    {
+        LayoutElement layout = target.GetComponent<LayoutElement>();
+        if (layout == null)
+        {
+            layout = target.AddComponent<LayoutElement>();
+        }
+
+        layout.ignoreLayout = true;
     }
 
     private Sprite GetWhiteSprite()
